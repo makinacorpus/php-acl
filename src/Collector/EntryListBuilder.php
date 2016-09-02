@@ -1,6 +1,11 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Collector;
+
+use MakinaCorpus\ACL\Entry;
+use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Entry list builder, this is what will be given to collector implementations

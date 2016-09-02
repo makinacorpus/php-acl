@@ -2,17 +2,17 @@
 
 namespace MakinaCorpus\ACL\Tests;
 
-use MakinaCorpus\ACL\ACLVoter;
+use MakinaCorpus\ACL\Impl\Memory\MemoryEntryStore;
+use MakinaCorpus\ACL\Impl\Native\ACLVoter;
+use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
+use MakinaCorpus\ACL\Impl\Symfony\EventCollector;
 use MakinaCorpus\ACL\Manager;
-use MakinaCorpus\ACL\Memory\MemoryEntryStore;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\ProfileSet;
 use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\Symfony\CollectEntryEvent;
-use MakinaCorpus\ACL\Symfony\EventCollector;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use MakinaCorpus\ACL\ProfileSet;
 
 class ACLVoterTest extends \PHPUnit_Framework_TestCase
 {

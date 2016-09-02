@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Converter;
 
 interface ProfileConverterInterface
 {

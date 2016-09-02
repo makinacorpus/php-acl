@@ -5,8 +5,17 @@ namespace MakinaCorpus\ACL;
 /**
  * Voter interface, for vote based access control
  */
-interface VoterInterface extends SupportiveInterface
+interface VoterInterface
 {
+    /**
+     * Does this object supports the given resource type
+     *
+     * @param string $type
+     *
+     * @return boolean
+     */
+    public function supports(Resource $resource);
+
     /**
      * Does this voter agree for giving the permission
      *

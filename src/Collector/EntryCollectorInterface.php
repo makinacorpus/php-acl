@@ -1,6 +1,8 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Collector;
+
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Entry collector is to be used in systems where ACL can be rebuilt at any
@@ -10,8 +12,17 @@ namespace MakinaCorpus\ACL;
  * Such systems includes, for example, the Drupal node_access system which
  * will ask modules for their grants when saving content or at runtime.
  */
-interface EntryCollectorInterface extends SupportiveInterface
+interface EntryCollectorInterface
 {
+    /**
+     * Does this object supports the given resource type
+     *
+     * @param string $type
+     *
+     * @return boolean
+     */
+    public function supports(Resource $resource);
+
     /**
      * Collect entries for resource
      *

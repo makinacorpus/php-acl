@@ -1,15 +1,18 @@
 <?php
 
-namespace MakinaCorpus\ACL\Symfony;
+namespace MakinaCorpus\ACL\Impl\Symfony;
 
-use MakinaCorpus\ACL\EntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Collects ACL entries for resources
+ */
 class CollectEntryEvent extends Event
 {
-    const EVENT_COLLECT = 'php_acl_collect';
+    const EVENT_COLLECT = 'php_acl.collect.entry';
 
     private $builder;
 

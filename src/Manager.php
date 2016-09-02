@@ -2,6 +2,9 @@
 
 namespace MakinaCorpus\ACL;
 
+use MakinaCorpus\ACL\Converter\ProfileConverterInterface;
+use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
+
 final class Manager
 {
     private $voters = [];
@@ -15,7 +18,7 @@ final class Manager
      * @param ProfileConverterInterface[] $profileConverters
      * @param ResourceConverterInterface[] $resourceConverters
      */
-    public function __construct(array $voters, array $profileConverters, array $resourceConverters)
+    public function __construct(array $voters, array $profileConverters = [], array $resourceConverters = [])
     {
         $this->voters = $voters;
         $this->profileConverters = $profileConverters;

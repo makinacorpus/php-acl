@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\ACL\Symfony;
+namespace MakinaCorpus\ACL\Impl\Symfony;
 
-use MakinaCorpus\ACL\EntryCollectorInterface;
-use MakinaCorpus\ACL\EntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

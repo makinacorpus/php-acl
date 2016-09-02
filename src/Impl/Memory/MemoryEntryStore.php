@@ -1,10 +1,10 @@
 <?php
 
-namespace MakinaCorpus\ACL\Memory;
+namespace MakinaCorpus\ACL\Impl\Memory;
 
 use MakinaCorpus\ACL\EntryList;
-use MakinaCorpus\ACL\EntryStoreInterface;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 /**
  * In memory entry storage, useful for either caching or unit testing.

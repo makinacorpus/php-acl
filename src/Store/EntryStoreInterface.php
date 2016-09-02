@@ -1,12 +1,24 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Store;
+
+use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Deal with entry list storage for all or some resource types.
  */
-interface EntryStoreInterface extends SupportiveInterface
+interface EntryStoreInterface
 {
+    /**
+     * Does this object supports the given resource type
+     *
+     * @param string $type
+     *
+     * @return boolean
+     */
+    public function supports(Resource $resource);
+
     /**
      * Delete all entries for the given resource
      *

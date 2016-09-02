@@ -13,7 +13,7 @@ use MakinaCorpus\ACL\ProfileSet;
  * Permission::VIEW, Permission::UPDATE and Permission::DELETE constants for
  * conversion, yet it is configurable.
  */
-class NodeAccessConverter
+class DrupalNodeAccessConverter
 {
     private $viewPermission;
     private $updatePermission;

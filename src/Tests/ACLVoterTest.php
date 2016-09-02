@@ -12,6 +12,7 @@ use MakinaCorpus\ACL\Symfony\CollectEntryEvent;
 use MakinaCorpus\ACL\Symfony\EventCollector;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use MakinaCorpus\ACL\ProfileSet;
 
 class ACLVoterTest extends \PHPUnit_Framework_TestCase
 {
@@ -98,12 +99,15 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
         $user2  = new Profile(Profile::USER, $user2Id);
         $groupA = new Profile(Profile::GROUP, $groupAId);
         $groupB = new Profile(Profile::GROUP, $groupBId);
+        $set1   = new ProfileSet([$user1, $groupA]);
+        $set2   = new ProfileSet([$user2, $groupB]);
 
         // Test reapatibility
         for ($i = 0; $i < 1; ++$i) {
             // Test raw permissions
             for ($id = $ARange[0]; $id <= $ARange[1]; ++$id) {
                 $resource = new Resource('content', $id);
+                // Profiles
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::DELETE));
@@ -116,6 +120,13 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                // Profile sets
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::VIEW));
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::UPDATE));
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,  Permission::VIEW));
+                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
+                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $BRange[0]; $id <= $BRange[1]; ++$id) {
                 $resource = new Resource('content', $id);
@@ -131,6 +142,13 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $user2,  Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                // Profile sets
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::VIEW));
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::UPDATE));
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
+                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
+                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $ABRange[0]; $id <= $ABRange[1]; ++$id) {
                 $resource = new Resource('content', $id);
@@ -146,6 +164,13 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $user2,  Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                // Profile sets
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::VIEW));
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::UPDATE));
+                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
+                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
+                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $NoRange[0]; $id <= $NoRange[1]; ++$id) {
                 $resource = new Resource('content', $id);
@@ -161,6 +186,13 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                // Profile sets
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::VIEW));
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::UPDATE));
+                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,  Permission::VIEW));
+                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
+                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
         }
 

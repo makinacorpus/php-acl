@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL;
 
-class Manager
+final class Manager
 {
     private $voters = [];
     private $profileConverters = [];
@@ -51,10 +51,13 @@ class Manager
      *
      * @return Profile
      */
-    private function getProfile($object)
+    private function expandProfile($object)
     {
+        if ($object instanceof ProfileSet) {
+            return $object->getAll();
+        }
         if ($object instanceof Profile) {
-            return $object;
+            return [$object];
         }
 
         foreach ($this->profileConverters as $converter) {
@@ -70,20 +73,27 @@ class Manager
      * Is profile granted to
      *
      * @param mixed $resource
-     * @param mixed $profile
+     * @param mixed|mixed[]|Profile|Profile[]|ProfileSet $profile
      * @param string $permission
      *
      * @return boolean
      */
     public function isGranted($resource, $profile, $permission)
     {
-        $resource = $this->getResource($resource);
-        $profile  = $this->getProfile($profile);
+        $profiles = $this->expandProfile($profile);
 
-        foreach ($this->voters as $voter) {
-            if ($voter->supports($resource)) {
-                if ($voter->vote($resource, $profile, $permission)) {
-                    return true;
+        if (!$profiles) {
+            return false;
+        }
+
+        $resource = $this->getResource($resource);
+
+        foreach ($profiles as $profile) {
+            foreach ($this->voters as $voter) {
+                if ($voter->supports($resource)) {
+                    if ($voter->vote($resource, $profile, $permission)) {
+                        return true;
+                    }
                 }
             }
         }

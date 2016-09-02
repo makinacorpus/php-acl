@@ -6,6 +6,11 @@ use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\EntryStoreInterface;
 use MakinaCorpus\ACL\Resource;
 
+/**
+ * In memory entry storage, useful for either caching or unit testing.
+ *
+ * Any sane person would never use this in a production environment.
+ */
 class MemoryEntryStore implements EntryStoreInterface
 {
     private $entries = [];

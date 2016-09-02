@@ -7,9 +7,6 @@ use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\Event;
 
-/**
- * Collect entries using the Symfony event dispatcher
- */
 class CollectEntryEvent extends Event
 {
     const EVENT_COLLECT = 'php_acl_collect';

@@ -1,11 +1,13 @@
 # Simple ACL API for PHP
 
-This is more a playground than a real API.
+This a playground/sandbox project.
 
 This API is not meant to store ACLs but to provide a dynamic at runtime API
 to collect resources ACLs and to check for their validity.
 
-## Structures
+I do have lots to document here.
+
+## Data types
 
 original: void
 id: int|string
@@ -16,7 +18,7 @@ resource: (type, id, ?object)
 entry: (profile, permission[], id) // ACE (Access Control Entry)
 entrylist: (resource, entry[]) // ACL (Access Control List)
 
-## Functions
+## Objects
 
 voter(?type)
   - supports(resource)
@@ -32,25 +34,30 @@ collector(?type) // Integration with framework
   - collect(resource) : entrylist
   - supports(resource) : boolean
 
-profileconverter: // Integration with framework
-  - canConvertAsProfile(object) : boolean
+converter: // Integration with framework
+  - supportsResource(object) : boolean
+  - supportsProfile(object) : boolean
+  - asResource(object) : resource
   - asProfile(object) : profile
 
-resourceconverter: // Integration with framework
-  - canConvertAsResource(object) : boolean
-  - asResource(object) : resource
-
-aclvoter(?type) : voter(?type)
+dynamicaclvoter(?type) : voter(?type)
   - entrystore[]
   - collector[]
   - vote(resource, profile) : boolean
 
 // Global ACL checker (no type)
 manager: checker
-  - aclvoter
   - voter[]
   - converter[]
   - vote(object, object, permission) // resource, profile, permission
+
+## Role/group/user structures
+
+rolepermission: string
+role: profile(type=role, rolepermission[])
+user: profile(type=user)
+group: profile(type=group)
+user_role(group,user,role)
 
 ## Assertions
 
@@ -62,3 +69,4 @@ ACE are not dynamic, and may be cached (wipe out when resources change)
 
 ACL are not dynamic, since they are composed of ACE
   - this means caching should happen here
+

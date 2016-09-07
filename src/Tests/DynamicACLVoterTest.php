@@ -3,7 +3,7 @@
 namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\Memory\MemoryEntryStore;
-use MakinaCorpus\ACL\Impl\Native\ACLVoter;
+use MakinaCorpus\ACL\Impl\Native\DynamicACLVoter;
 use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
 use MakinaCorpus\ACL\Impl\Symfony\EventCollector;
 use MakinaCorpus\ACL\Manager;
@@ -14,7 +14,7 @@ use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class ACLVoterTest extends \PHPUnit_Framework_TestCase
+class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 {
     private $voter;
     private $collector;
@@ -37,7 +37,7 @@ class ACLVoterTest extends \PHPUnit_Framework_TestCase
         $this->dispatcher = new EventDispatcher();
         $this->collector  = new EventCollector($this->dispatcher);
         $this->storage    = $this->createStorage();
-        $this->voter      = new ACLVoter([$this->storage], [$this->collector]);
+        $this->voter      = new DynamicACLVoter([$this->storage], [$this->collector]);
         $this->manager    = new Manager([$this->voter], [], []);
     }
 

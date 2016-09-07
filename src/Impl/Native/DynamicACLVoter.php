@@ -4,6 +4,7 @@ namespace MakinaCorpus\ACL\Impl\Native;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
@@ -13,7 +14,7 @@ use MakinaCorpus\ACL\VoterInterface;
  * Default voter, uses ACL stored as EntryList instances by one or more
  * entry stores
  */
-class ACLVoter implements VoterInterface
+class DynamicACLVoter implements VoterInterface
 {
     private $stores = [];
     private $collectors = [];

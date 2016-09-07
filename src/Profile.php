@@ -5,7 +5,7 @@ namespace MakinaCorpus\ACL;
 /**
  * Represent a single entry target (user)
  */
-final class Profile
+class Profile
 {
     const GROUP = 'group';
     const USER = 'user';

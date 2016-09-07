@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * Collect entries using the Symfony event dispatcher
  */
-class EventCollector implements EntryCollectorInterface
+class EventEntryCollector implements EntryCollectorInterface
 {
     private $dispatcher;
 

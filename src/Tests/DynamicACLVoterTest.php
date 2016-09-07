@@ -3,14 +3,14 @@
 namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\Memory\MemoryEntryStore;
-use MakinaCorpus\ACL\Impl\Native\DynamicACLVoter;
 use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
-use MakinaCorpus\ACL\Impl\Symfony\EventCollector;
+use MakinaCorpus\ACL\Impl\Symfony\EventEntryCollector;
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\ProfileSet;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -35,7 +35,7 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->dispatcher = new EventDispatcher();
-        $this->collector  = new EventCollector($this->dispatcher);
+        $this->collector  = new EventEntryCollector($this->dispatcher);
         $this->storage    = $this->createStorage();
         $this->voter      = new DynamicACLVoter([$this->storage], [$this->collector]);
         $this->manager    = new Manager([$this->voter], [], []);

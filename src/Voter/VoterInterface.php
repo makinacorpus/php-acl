@@ -1,6 +1,9 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Voter;
+
+use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Voter interface, for vote based access control

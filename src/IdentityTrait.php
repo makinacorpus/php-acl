@@ -64,10 +64,6 @@ trait IdentityTrait
      */
     public function getObject()
     {
-        if (null === $this->object) {
-            throw new \LogicException("does not carry an object");
-        }
-
         return $this->object;
     }
 

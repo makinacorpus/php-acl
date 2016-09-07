@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Native;
+namespace MakinaCorpus\ACL\Voter;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\EntryListBuilder;
@@ -8,7 +8,7 @@ use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
-use MakinaCorpus\ACL\VoterInterface;
+use MakinaCorpus\ACL\Voter\VoterInterface;
 
 /**
  * Default voter, uses ACL stored as EntryList instances by one or more

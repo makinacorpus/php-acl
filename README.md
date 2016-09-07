@@ -30,24 +30,23 @@ entrystore(?type):
   - load(resource) : entrylist
   - delete(resource)
 
-collector(?type) // Integration with framework
-  - collect(resource) : entrylist
-  - supports(resource) : boolean
+profilecollector(?type) // Integration with framework
+  - collect(resource) : profileset
 
-converter: // Integration with framework
-  - supportsResource(object) : boolean
-  - supportsProfile(object) : boolean
-  - asResource(object) : resource
-  - asProfile(object) : profile
+resourcecollector(?type) // Integration with framework
+  - collect(resource) : entrylist
+
+resourceconverter: // Integration with framework
+  - convert(object) : profile
 
 dynamicaclvoter(?type) : voter(?type)
   - entrystore[]
   - collector[]
   - vote(resource, profile) : boolean
 
-// Global ACL checker (no type)
 manager: checker
   - voter[]
+  - profilecollector[]
   - converter[]
   - vote(object, object, permission) // resource, profile, permission
 

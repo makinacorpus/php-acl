@@ -2,26 +2,28 @@
 
 namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Converter\ProfileConverterInterface;
+use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
+use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
+use MakinaCorpus\ACL\Voter\VoterInterface;
 
 final class Manager
 {
     private $voters = [];
-    private $profileConverters = [];
+    private $profileCollectors = [];
     private $resourceConverters = [];
 
     /**
      * Default constructor
      *
      * @param VoterInterface[] $voters
-     * @param ProfileConverterInterface[] $profileConverters
+     * @param ProfileCollectorInterface[] $profileCollectors
      * @param ResourceConverterInterface[] $resourceConverters
      */
-    public function __construct(array $voters, array $profileConverters = [], array $resourceConverters = [])
+    public function __construct(array $voters, array $profileCollectors = [], array $resourceConverters = [])
     {
         $this->voters = $voters;
-        $this->profileConverters = $profileConverters;
+        $this->profileCollectors = $profileCollectors;
         $this->resourceConverters = $resourceConverters;
     }
 
@@ -39,8 +41,9 @@ final class Manager
         }
 
         foreach ($this->resourceConverters as $converter) {
-            if ($converter->canConvertAsResource($object)) {
-                return $converter->asResource($object);
+            $resource = $converter->convert($object);
+            if ($resource) {
+                return $resource;
             }
         }
 
@@ -48,35 +51,54 @@ final class Manager
     }
 
     /**
+     * Collect entry list for the given resource
+     *
+     * @param mixed $object
+     *
+     * @return ProfileSet
+     */
+    private function collectProfileSetFor($object)
+    {
+        // Having an empty list of collects is valid, it just means that the
+        // business layer deals with permissions by itself, using the store
+        // directly, which is definitely legal
+        if (empty($this->profileCollectors)) {
+            return new ProfileSet([], $object);
+        }
+
+        $builder = new ProfileSetBuilder($object);
+
+        foreach ($this->profileCollectors as $collector) {
+            $collector->collect($builder);
+        }
+
+        return $builder->convertToProfileSet();
+    }
+
+    /**
      * Convert object to profile
      *
      * @param mixed $object
      *
-     * @return Profile
+     * @return ProfileSet
      */
     private function expandProfile($object)
     {
         if ($object instanceof ProfileSet) {
-            return $object->getAll();
+            return $object;
         }
         if ($object instanceof Profile) {
-            return [$object];
+            return new ProfileSet([$object], $object->getObject());
         }
 
-        foreach ($this->profileConverters as $converter) {
-            if ($converter->canConvertAsProfile($object)) {
-                return $converter->asProfile($object);
-            }
-        }
-
-        throw new \InvalidArgumentException("cannot convert object to profile");
+        return $this->collectProfileSetFor($object);
     }
 
     /**
      * Is profile granted to
      *
      * @param mixed $resource
-     * @param mixed|mixed[]|Profile|Profile[]|ProfileSet $profile
+     * @param mixed|Profile|ProfileSet $profile
      * @param string $permission
      *
      * @return boolean
@@ -91,7 +113,7 @@ final class Manager
 
         $resource = $this->getResource($resource);
 
-        foreach ($profiles as $profile) {
+        foreach ($profiles->getAll() as $profile) {
             foreach ($this->voters as $voter) {
                 if ($voter->supports($resource)) {
                     if ($voter->vote($resource, $profile, $permission)) {

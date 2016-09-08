@@ -12,6 +12,8 @@ final class Manager
     private $voters = [];
     private $profileCollectors = [];
     private $resourceConverters = [];
+    private $profileCache = [];
+    private $permissionCache = [];
 
     /**
      * Default constructor
@@ -91,7 +93,46 @@ final class Manager
             return new ProfileSet([$object], $object->getObject());
         }
 
-        return $this->collectProfileSetFor($object);
+        $id = Identity::computeUniqueIdentifier($object);
+
+        if (isset($this->profileCache[$id])) {
+            return $this->profileCache[$id];
+        }
+
+        return $this->profileCache[$id] = $this->collectProfileSetFor($object);
+    }
+
+    /**
+     * Empty caches
+     */
+    public function refresh()
+    {
+        $this->profileCache = [];
+        $this->permissionCache = [];
+    }
+
+    /**
+     * Do the real permissions check
+     *
+     * @param Resource $resource
+     * @param ProfileSet $profiles
+     * @param string $permission
+     *
+     * @return boolean
+     */
+    private function doCheck(Resource $resource, ProfileSet $profiles, $permission)
+    {
+        foreach ($profiles->getAll() as $profile) {
+            foreach ($this->voters as $voter) {
+                if ($voter->supports($resource)) {
+                    if ($voter->vote($resource, $profile, $permission)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -113,16 +154,14 @@ final class Manager
 
         $resource = $this->getResource($resource);
 
-        foreach ($profiles->getAll() as $profile) {
-            foreach ($this->voters as $voter) {
-                if ($voter->supports($resource)) {
-                    if ($voter->vote($resource, $profile, $permission)) {
-                        return true;
-                    }
-                }
-            }
+        $cid  = $profiles->getCacheIdentifier();
+        $type = $resource->getType();
+        $id   = $resource->getId();
+
+        if (isset($this->permissionCache[$cid][$type][$id][$permission])) {
+            return $this->permissionCache[$cid][$type][$id][$permission];
         }
 
-        return false;
+        return $this->permissionCache[$cid][$type][$id][$permission] = $this->doCheck($resource, $profiles, $permission);
     }
 }

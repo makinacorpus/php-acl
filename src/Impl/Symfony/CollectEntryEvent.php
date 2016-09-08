@@ -43,10 +43,6 @@ class CollectEntryEvent extends Event
      */
     public function getObject()
     {
-        if (!$this->builder->getResource()->hasObject()) {
-            return null;
-        }
-
         return $this->builder->getResource()->getObject();
     }
 

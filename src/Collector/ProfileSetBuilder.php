@@ -43,7 +43,7 @@ final class ProfileSetBuilder
 
         foreach ($this->entries as $type => $list) {
             foreach ($list as $id) {
-                $profiles = new Profile($type, $id);
+                $profiles[] = new Profile($type, $id);
             }
         }
 

@@ -4,11 +4,12 @@ namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\Memory\MemoryEntryStore;
 use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
+use MakinaCorpus\ACL\Impl\Symfony\CollectProfileEvent;
 use MakinaCorpus\ACL\Impl\Symfony\EventEntryCollector;
+use MakinaCorpus\ACL\Impl\Symfony\EventProfileCollector;
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
-use MakinaCorpus\ACL\ProfileSet;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
@@ -17,7 +18,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 {
     private $voter;
-    private $collector;
+    private $entryCollector;
+    private $profileCollector;
     private $dispatcher;
     private $storage;
     private $manager;
@@ -34,11 +36,12 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->dispatcher = new EventDispatcher();
-        $this->collector  = new EventEntryCollector($this->dispatcher);
-        $this->storage    = $this->createStorage();
-        $this->voter      = new DynamicACLVoter([$this->storage], [$this->collector]);
-        $this->manager    = new Manager([$this->voter], [], []);
+        $this->dispatcher       = new EventDispatcher();
+        $this->entryCollector   = new EventEntryCollector($this->dispatcher);
+        $this->profileCollector = new EventProfileCollector($this->dispatcher);
+        $this->storage          = $this->createStorage();
+        $this->voter            = new DynamicACLVoter([$this->storage], [$this->entryCollector]);
+        $this->manager          = new Manager([$this->voter], [$this->profileCollector], []);
     }
 
     /**
@@ -92,18 +95,46 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
             })
         ;
 
+        $this->dispatcher->addListener(
+            CollectProfileEvent::EVENT_COLLECT,
+            function (CollectProfileEvent $event) use ($user1Id, $user2Id, $groupAId, $groupBId) {
+                switch ($event->getObject()) {
+                    case $user1Id:
+                        $event->getBuilder()->add(Profile::USER, $user1Id);
+                        break;
+                    case $user2Id:
+                        $event->getBuilder()->add(Profile::USER, $user2Id);
+                        break;
+                    case $groupAId:
+                        $event->getBuilder()->add(Profile::GROUP, $groupAId);
+                        break;
+                    case $groupBId:
+                        $event->getBuilder()->add(Profile::GROUP, $groupBId);
+                        break;
+                    case 'set1':
+                        $event->getBuilder()->add(Profile::USER, $user1Id);
+                        $event->getBuilder()->add(Profile::GROUP, $groupAId);
+                        break;
+                    case 'set2':
+                        $event->getBuilder()->add(Profile::USER, $user2Id);
+                        $event->getBuilder()->add(Profile::GROUP, $groupBId);
+                        break;
+                }
+            })
+        ;
+
         // Now we have a bootstrapped environnement, start testing things
         $start = microtime(true);
 
-        $user1  = new Profile(Profile::USER, $user1Id);
-        $user2  = new Profile(Profile::USER, $user2Id);
-        $groupA = new Profile(Profile::GROUP, $groupAId);
-        $groupB = new Profile(Profile::GROUP, $groupBId);
-        $set1   = new ProfileSet([$user1, $groupA]);
-        $set2   = new ProfileSet([$user2, $groupB]);
+        $user1  = $user1Id;
+        $user2  = $user2Id;
+        $groupA = $groupAId;
+        $groupB = $groupBId;
+        $set1   = 'set1';
+        $set2   = 'set2';
 
         // Test reapatibility
-        for ($i = 0; $i < 1; ++$i) {
+        for ($i = 0; $i < 3; ++$i) {
             // Test raw permissions
             for ($id = $ARange[0]; $id <= $ARange[1]; ++$id) {
                 $resource = new Resource('content', $id);

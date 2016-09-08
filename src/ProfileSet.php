@@ -27,6 +27,7 @@ final class ProfileSet
     private $profiles = [];
     private $index = [];
     private $object;
+    private $cacheId;
 
     /**
      * Default constructor
@@ -44,6 +45,40 @@ final class ProfileSet
         }
 
         $this->object = $object;
+        $this->cacheId = $this->computeCacheIdentifier();
+    }
+
+    /**
+     * Compute a unique identifier for this profile set
+     *
+     * This will be used for caching purpose only
+     *
+     * @return string
+     */
+    private function computeCacheIdentifier()
+    {
+        $ret = [];
+
+        foreach ($this->profiles as $profile) {
+            $ret[$profile->getType()][] = $profile->getId();
+        }
+        foreach ($ret as $type => $idList) {
+            $ret[$type] = implode(',', $idList);
+        }
+
+        return implode(';', $ret);
+    }
+
+    /**
+     * Get a unique identifier for this profile set
+     *
+     * This will be used for caching purpose only
+     *
+     * @return string
+     */
+    public function getCacheIdentifier()
+    {
+        return $this->cacheId;
     }
 
     /**

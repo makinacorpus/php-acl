@@ -32,10 +32,6 @@ class CollectProfileEvent extends Event
      */
     public function getObject()
     {
-        if (!$this->builder->hasObject()) {
-            return null;
-        }
-
         return $this->builder->getObject();
     }
 

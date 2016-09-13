@@ -77,6 +77,6 @@ trait IdentityTrait
      */
     public function equals($object)
     {
-        return $object === $this || ($this->object && $object->object === $this->object) || ($object->type === $this->type && $object->id === $this->id);
+        return $object->type === $this->type && $object->id === $this->id;
     }
 }

@@ -11,6 +11,9 @@ use MakinaCorpus\ACL\Profile;
 
 /**
  * This implementation will only allow a "view" permission for queries.
+ *
+ * It also implies that your resources have numerical identifiers to make
+ * query faster; for all others cases, you may not use this implementation.
  */
 class DrupalTableEntryStore implements EntryStoreInterface
 {

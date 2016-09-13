@@ -5,7 +5,7 @@ namespace MakinaCorpus\ACL;
 /**
  * Represent a single entry target (user)
  */
-final class Entry
+class Entry
 {
     private $profile;
     private $permissions = [];

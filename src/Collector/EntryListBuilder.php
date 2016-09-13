@@ -6,6 +6,8 @@ use MakinaCorpus\ACL\Entry;
 use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\Cache\BitmaskEntry;
+use MakinaCorpus\ACL\Cache\BitmaskMap;
 
 /**
  * Entry list builder, this is what will be given to collector implementations
@@ -42,6 +44,7 @@ final class EntryListBuilder
     public function convertToEntryList()
     {
         $entries = [];
+        //$map = new BitmaskMap();
 
         foreach ($this->entries as $type => $list) {
             foreach ($list as $id => $permissions) {
@@ -49,6 +52,7 @@ final class EntryListBuilder
                 // only meant to deal with ACL storage in the end
                 $profile = new Profile($type, $id);
                 $entries[] = new Entry($profile, array_keys($permissions));
+                // $entries[] = new BitmaskEntry($profile, array_keys($permissions), $map);
             }
         }
 

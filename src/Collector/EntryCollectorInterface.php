@@ -21,7 +21,7 @@ interface EntryCollectorInterface
      *
      * @return boolean
      */
-    public function supports(Resource $resource);
+    public function supports($type);
 
     /**
      * Collect entries for resource

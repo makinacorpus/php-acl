@@ -24,6 +24,9 @@ namespace MakinaCorpus\ACL;
  */
 final class ProfileSet
 {
+    /**
+     * @var Profile[]
+     */
     private $profiles = [];
     private $index = [];
     private $cacheId;

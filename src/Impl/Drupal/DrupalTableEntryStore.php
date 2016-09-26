@@ -119,9 +119,9 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(Resource $resource)
+    public function supports($type)
     {
-        return !$this->type || $resource->getType() === $this->type;
+        return $type === $this->type;
     }
 
     /**
@@ -129,7 +129,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
      */
     public function delete(Resource $resource)
     {
-        if (!$this->supports($resource)) {
+        if (!$this->supports($resource->getType())) {
             throw new \LogicException(sprintf("this implementation does not supports resource with type %s", $resource->getType()));
         }
 
@@ -141,7 +141,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
      */
     public function load(Resource $resource)
     {
-        if (!$this->supports($resource)) {
+        if (!$this->supports($resource->getType())) {
             throw new \LogicException(sprintf("this implementation does not supports resource with type %s", $resource->getType()));
         }
 

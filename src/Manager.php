@@ -124,7 +124,7 @@ final class Manager
     {
         foreach ($profiles->getAll() as $profile) {
             foreach ($this->voters as $voter) {
-                if ($voter->supports($resource)) {
+                if ($voter->supports($resource->getType())) {
                     if ($voter->vote($resource, $profile, $permission)) {
                         return true;
                     }
@@ -133,6 +133,18 @@ final class Manager
         }
 
         return false;
+    }
+
+    /**
+     * Preload data if necessary for resources
+     *
+     * Data will get cached, making the permission checks a lot faster.
+     *
+     * @param mixed[] $resources
+     */
+    public function preload(array $resources)
+    {
+
     }
 
     /**

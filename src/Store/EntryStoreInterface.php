@@ -17,7 +17,7 @@ interface EntryStoreInterface
      *
      * @return boolean
      */
-    public function supports(Resource $resource);
+    public function supports($type);
 
     /**
      * Delete all entries for the given resource

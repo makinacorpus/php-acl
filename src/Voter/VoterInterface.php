@@ -17,7 +17,7 @@ interface VoterInterface
      *
      * @return boolean
      */
-    public function supports(Resource $resource);
+    public function supports($type);
 
     /**
      * Does this voter agree for giving the permission

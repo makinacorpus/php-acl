@@ -18,7 +18,7 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(Resource $resource)
+    public function supports($type)
     {
         return true;
     }

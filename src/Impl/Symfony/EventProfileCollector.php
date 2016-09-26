@@ -27,14 +27,6 @@ class EventProfileCollector implements ProfileCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($object)
-    {
-        return $this->dispatcher->hasListeners(CollectProfileEvent::EVENT_COLLECT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function collect(ProfileSetBuilder $builder)
     {
         $event = new CollectProfileEvent($builder);

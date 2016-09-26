@@ -34,10 +34,10 @@ class DynamicACLVoter implements VoterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(Resource $resource)
+    public function supports($type)
     {
         foreach ($this->stores as $store) {
-            if ($store->supports($resource)) {
+            if ($store->supports($type)) {
                 return true;
             }
         }
@@ -64,7 +64,7 @@ class DynamicACLVoter implements VoterInterface
         $builder = new EntryListBuilder($resource);
 
         foreach ($this->collectors as $collector) {
-            if ($collector->supports($resource)) {
+            if ($collector->supports($resource->getType())) {
                 $collector->collect($builder);
             }
         }
@@ -84,7 +84,7 @@ class DynamicACLVoter implements VoterInterface
         $list = null;
 
         foreach ($this->stores as $store) {
-            if ($store->supports($resource)) {
+            if ($store->supports($resource->getType())) {
                 if ($list = $store->load($resource)) {
                     break;
                 }
@@ -109,7 +109,7 @@ class DynamicACLVoter implements VoterInterface
     public function vote(Resource $resource, Profile $profile, $permission)
     {
         foreach ($this->stores as $store) {
-            if ($store->supports($resource)) {
+            if ($store->supports($resource->getType())) {
                 if ($list = $this->getEntryListFor($resource)) {
                     if ($list->hasPermissionFor($profile, $permission)) {
                         return true;

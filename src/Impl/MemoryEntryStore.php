@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Memory;
+namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Resource;

@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Tests;
 
-use MakinaCorpus\ACL\Impl\Memory\MemoryEntryStore;
+use MakinaCorpus\ACL\Impl\MemoryEntryStore;
 use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
 use MakinaCorpus\ACL\Impl\Symfony\CollectProfileEvent;
 use MakinaCorpus\ACL\Impl\Symfony\EventEntryCollector;
@@ -14,6 +14,7 @@ use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use MakinaCorpus\ACL\Impl\PropertyCacheEntryStoreProxy;
 
 class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +27,7 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 
     protected function createStorage()
     {
-        return new MemoryEntryStore();
+        return new PropertyCacheEntryStoreProxy(new MemoryEntryStore());
     }
 
     protected function getVoter()

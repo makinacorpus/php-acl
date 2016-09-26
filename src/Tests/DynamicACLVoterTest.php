@@ -14,7 +14,6 @@ use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use MakinaCorpus\ACL\Impl\PropertyCacheEntryStoreProxy;
 
 class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +26,7 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 
     protected function createStorage()
     {
-        return new PropertyCacheEntryStoreProxy(new MemoryEntryStore());
+        return new MemoryEntryStore();
     }
 
     protected function getVoter()
@@ -99,7 +98,7 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
         $this->dispatcher->addListener(
             CollectProfileEvent::EVENT_COLLECT,
             function (CollectProfileEvent $event) use ($user1Id, $user2Id, $groupAId, $groupBId) {
-                switch ($event->getObject()) {
+                switch ($event->getBuilder()->getObject()) {
                     case $user1Id:
                         $event->getBuilder()->add(Profile::USER, $user1Id);
                         break;

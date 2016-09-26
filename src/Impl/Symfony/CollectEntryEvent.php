@@ -37,16 +37,6 @@ class CollectEntryEvent extends Event
     }
 
     /**
-     * Get original object
-     *
-     * @return mixed
-     */
-    public function getObject()
-    {
-        return $this->builder->getResource()->getObject();
-    }
-
-    /**
      * Get entry list builder
      *
      * @return EntryListBuilder

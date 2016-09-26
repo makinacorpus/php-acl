@@ -11,20 +11,17 @@ trait IdentityTrait
 {
     private $type;
     private $id;
-    private $object;
 
     /**
      * Default constructor
      *
      * @param string $type
      * @param int|string $id
-     * @param mixed $object
      */
-    public function __construct($type, $id, $object = null)
+    public function __construct($type, $id)
     {
         $this->type = $type;
         $this->id = $id;
-        $this->object = $object;
     }
 
     /**
@@ -45,26 +42,6 @@ trait IdentityTrait
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Has this instance an object
-     *
-     * @return boolean
-     */
-    public function hasObject()
-    {
-        return null !== $this->object;
-    }
-
-    /**
-     * Get object
-     *
-     * @return mixed
-     */
-    public function getObject()
-    {
-        return $this->object;
     }
 
     /**

@@ -90,7 +90,7 @@ final class Manager
             return $object;
         }
         if ($object instanceof Profile) {
-            return new ProfileSet([$object], $object->getObject());
+            return new ProfileSet([$object]);
         }
 
         $id = Identity::computeUniqueIdentifier($object);

@@ -26,7 +26,6 @@ final class ProfileSet
 {
     private $profiles = [];
     private $index = [];
-    private $object;
     private $cacheId;
 
     /**
@@ -34,17 +33,14 @@ final class ProfileSet
      *
      * @param Profile[] $profiles
      *   List of profiles the user has
-     * @param mixed $object
-     *   Original user profile
      */
-    public function __construct(array $profiles, $object = null)
+    public function __construct(array $profiles)
     {
         foreach ($profiles as $profile) {
             $this->profiles[] = $profile;
             $this->index[$profile->getType()][(string)$profile->getId()] = true;
         }
 
-        $this->object = $object;
         $this->cacheId = $this->computeCacheIdentifier();
     }
 
@@ -79,16 +75,6 @@ final class ProfileSet
     public function getCacheIdentifier()
     {
         return $this->cacheId;
-    }
-
-    /**
-     * Get original user object
-     *
-     * @return mixed
-     */
-    public function getObject()
-    {
-        return $this->object;
     }
 
     /**

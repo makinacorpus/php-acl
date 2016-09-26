@@ -26,16 +26,6 @@ class CollectProfileEvent extends Event
     }
 
     /**
-     * Get original object
-     *
-     * @return mixed
-     */
-    public function getObject()
-    {
-        return $this->builder->getObject();
-    }
-
-    /**
      * Get entry list builder
      *
      * @return ProfileSetBuilder

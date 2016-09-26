@@ -47,7 +47,7 @@ final class ProfileSetBuilder
             }
         }
 
-        return new ProfileSet($profiles, $this->object);
+        return new ProfileSet($profiles);
     }
 
     /**

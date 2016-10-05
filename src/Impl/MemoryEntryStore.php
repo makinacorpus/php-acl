@@ -78,10 +78,8 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function save(EntryListInterface $list)
+    public function save(Resource $resource, EntryListInterface $list)
     {
-        $resource = $list->getResource();
-
         $this->entries[$resource->getType()][(string)$resource->getId()] = $list;
 
         return $list;

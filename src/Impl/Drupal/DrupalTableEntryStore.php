@@ -176,12 +176,11 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function save(EntryListInterface $list)
+    public function save(Resource $resource, EntryListInterface $list)
     {
         $query = $this->database->insert($this->table);
         $query->fields(['resource_id', 'profile_type', 'profile_id', 'can_view', 'permissions', 'bitmask']);
 
-        $resource = $list->getResource();
         $resourceId = $resource->getId();
 
         foreach ($list->getEntries() as $entry) {

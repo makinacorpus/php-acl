@@ -36,7 +36,7 @@ final class Manager
      *
      * @return Resource
      */
-    private function getResource($object)
+    private function expandResource($object)
     {
         if ($object instanceof Resource) {
             return $object;
@@ -196,7 +196,7 @@ final class Manager
             return false;
         }
 
-        $resource = $this->getResource($resource);
+        $resource = $this->expandResource($resource);
 
         $cid  = $profiles->getCacheIdentifier();
         $type = $resource->getType();

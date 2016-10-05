@@ -8,13 +8,6 @@ namespace MakinaCorpus\ACL;
 interface EntryListInterface
 {
     /**
-     * Get resource
-     *
-     * @return Resource
-     */
-    public function getResource();
-
-    /**
      * Has the given permission
      *
      * @param string $permission

@@ -49,7 +49,7 @@ final class NaiveEntryListBuilder implements EntryListBuilderInterface
             }
         }
 
-        return new NaiveEntryList($this->resource, $entries);
+        return new NaiveEntryList($entries);
     }
 
     /**

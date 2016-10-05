@@ -97,7 +97,7 @@ class DynamicACLVoter implements VoterInterface
 
             // @todo should we call this at all?
             if ($list && $store) {
-                $store->save($list);
+                $store->save($resource, $list);
             }
         }
 

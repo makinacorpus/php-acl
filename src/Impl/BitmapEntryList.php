@@ -4,36 +4,22 @@ namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Profile;
-use MakinaCorpus\ACL\Resource;
 
 /**
  * Represent a full ACL for a single resource
  */
 final class NaiveEntryList implements EntryListInterface
 {
-    private $resource;
     private $entries = [];
 
     /**
      * Default constructor
      *
-     * @param Resource $resource
      * @param NaiveEntry[] $entries
      */
-    public function __construct(Resource $resource, array $entries)
+    public function __construct(array $entries)
     {
-        $this->resource = $resource;
         $this->entries = $entries;
-    }
-
-    /**
-     * Get resource
-     *
-     * @return Resource
-     */
-    public function getResource()
-    {
-        return $this->resource;
     }
 
     /**

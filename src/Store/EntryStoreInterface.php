@@ -61,9 +61,10 @@ interface EntryStoreInterface
     /**
      * Save entries for the given resource (removes old one if exists)
      *
+     * @param Resource $resource
      * @param EntryListInterface $list
      *
      * @return EntryListInterface
      */
-    public function save(EntryListInterface $list);
+    public function save(Resource $resource, EntryListInterface $list);
 }

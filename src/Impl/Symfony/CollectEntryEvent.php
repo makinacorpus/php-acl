@@ -3,7 +3,6 @@
 namespace MakinaCorpus\ACL\Impl\Symfony;
 
 use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
-use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\Event;
 
@@ -24,16 +23,6 @@ class CollectEntryEvent extends Event
     public function __construct(EntryListBuilderInterface $builder)
     {
         $this->builder = $builder;
-    }
-
-    /**
-     * Get resource type
-     *
-     * @return string
-     */
-    public function getResourceType()
-    {
-        return $this->builder->getResource()->getType();
     }
 
     /**

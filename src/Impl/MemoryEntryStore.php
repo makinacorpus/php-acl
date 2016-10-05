@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Impl;
 
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
@@ -59,7 +59,7 @@ class MemoryEntryStore implements EntryStoreInterface
      *
      * @param ResourceCollection $resources
      *
-     * @return EntryList[]
+     * @return EntryListInterface[]
      *   Each entry list for all resources, keys are the same as the $resources
      *   array entry list: without this everything would fail since we cannot
      *   use maps with objects as keys in PHP
@@ -78,7 +78,7 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function save(EntryList $list)
+    public function save(EntryListInterface $list)
     {
         $resource = $list->getResource();
 

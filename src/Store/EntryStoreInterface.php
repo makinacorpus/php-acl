@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Store;
 
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
 
@@ -39,7 +39,7 @@ interface EntryStoreInterface
      *
      * @param Resource $resource
      *
-     * @return EntryList
+     * @return EntryListInterface
      *   You may return null if nothing exists, but if it has already been
      *   asked to store an empty list, you should then return an empty list
      *   in order to the checker to avoid running the collect event twice.
@@ -51,7 +51,7 @@ interface EntryStoreInterface
      *
      * @param ResourceCollection $resources
      *
-     * @return EntryList[]
+     * @return EntryListInterface[]
      *   Each entry list for all resources, keys are the same as the $resources
      *   array entry list: without this everything would fail since we cannot
      *   use maps with objects as keys in PHP
@@ -61,9 +61,9 @@ interface EntryStoreInterface
     /**
      * Save entries for the given resource (removes old one if exists)
      *
-     * @param EntryList $list
+     * @param EntryListInterface $list
      *
-     * @return EntryList
+     * @return EntryListInterface
      */
-    public function save(EntryList $list);
+    public function save(EntryListInterface $list);
 }

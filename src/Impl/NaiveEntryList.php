@@ -1,11 +1,15 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Impl;
+
+use MakinaCorpus\ACL\EntryListInterface;
+use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Represent a full ACL for a single resource
  */
-final class EntryList
+final class NaiveEntryList implements EntryListInterface
 {
     private $resource;
     private $entries = [];
@@ -14,7 +18,7 @@ final class EntryList
      * Default constructor
      *
      * @param Resource $resource
-     * @param Entry[] $entries
+     * @param NaiveEntry[] $entries
      */
     public function __construct(Resource $resource, array $entries)
     {
@@ -30,16 +34,6 @@ final class EntryList
     public function getResource()
     {
         return $this->resource;
-    }
-
-    /**
-     * Get all entries
-     *
-     * @return Entry[]
-     */
-    public function getEntries()
-    {
-        return $this->entries;
     }
 
     /**

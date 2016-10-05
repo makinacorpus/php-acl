@@ -1,11 +1,13 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Impl;
+
+use MakinaCorpus\ACL\Profile;
 
 /**
  * Represent a single entry target (user)
  */
-class Entry
+final class NaiveEntry
 {
     private $profile;
     private $permissions = [];

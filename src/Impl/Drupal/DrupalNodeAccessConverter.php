@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Impl\Drupal;
 
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\ProfileSet;
 
@@ -42,11 +42,11 @@ class DrupalNodeAccessConverter
     /**
      * Convert entry list to node access grant list
      *
-     * @param EntryList $entryList
+     * @param EntryListInterface $entryList
      *
      * @return array
      */
-    public function convertEntryList(EntryList $entryList)
+    public function convertEntryList(EntryListInterface $entryList)
     {
         $ret = [];
 

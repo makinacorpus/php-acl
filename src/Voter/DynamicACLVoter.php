@@ -4,7 +4,7 @@ namespace MakinaCorpus\ACL\Voter;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\EntryListBuilder;
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
@@ -51,7 +51,7 @@ class DynamicACLVoter implements VoterInterface
      *
      * @param Resource $resource
      *
-     * @return EntryList
+     * @return EntryListInterface
      */
     private function collectEntryListFor(Resource $resource)
     {
@@ -78,7 +78,7 @@ class DynamicACLVoter implements VoterInterface
      *
      * @param Resource $resource
      *
-     * @return EntryList
+     * @return EntryListInterface
      */
     private function getEntryListFor(Resource $resource)
     {

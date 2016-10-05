@@ -2,8 +2,8 @@
 
 namespace MakinaCorpus\ACL\Collector;
 
-use MakinaCorpus\ACL\Entry;
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\Impl\NaiveEntry;
+use MakinaCorpus\ACL\Impl\NaiveEntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 
@@ -49,12 +49,11 @@ final class EntryListBuilder
                 // Here the original profile object is unnecessary, since it is
                 // only meant to deal with ACL storage in the end
                 $profile = new Profile($type, $id);
-                $entries[] = new Entry($profile, array_keys($permissions));
-                // $entries[] = new BitmaskEntry($profile, array_keys($permissions), $map);
+                $entries[] = new NaiveEntry($profile, array_keys($permissions));
             }
         }
 
-        return new EntryList($this->resource, $entries);
+        return new NaiveEntryList($this->resource, $entries);
     }
 
     /**

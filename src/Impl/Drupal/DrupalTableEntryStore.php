@@ -2,12 +2,13 @@
 
 namespace MakinaCorpus\ACL\Impl\Drupal;
 
-use MakinaCorpus\ACL\EntryList;
+use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
-use MakinaCorpus\ACL\Entry;
 use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\ResourceCollection;
 
 /**
  * This implementation will only allow a "view" permission for queries.
@@ -139,6 +140,14 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
+    public function deleteAll(ResourceCollection $resources)
+    {
+        throw new \Exception("Not implemented yet");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function load(Resource $resource)
     {
         if (!$this->supports($resource->getType())) {
@@ -146,19 +155,28 @@ class DrupalTableEntryStore implements EntryStoreInterface
         }
 
         $rows = $this->database->query("SELECT * FROM {" . $this->table . "} WHERE resource_id = ?", [$resource->getId()]);
-        $entries = [];
+
+        $builder = new EntryListBuilder($resource);
 
         foreach ($rows as $row) {
-            $entries[] = new Entry(new Profile($row->profile_type, $row->profile_id), explode(',', $row->permissions));
+            $builder->add($row->profile_type, $row->profile_id, explode(',', $row->permissions));
         }
 
-        return new EntryList($resource, $entries);
+        return $builder->convertToEntryList();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save(EntryList $list)
+    public function loadAll(ResourceCollection $resources)
+    {
+        throw new \Exception("Not implemented yet");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function save(EntryListInterface $list)
     {
         $query = $this->database->insert($this->table);
         $query->fields(['resource_id', 'profile_type', 'profile_id', 'can_view', 'permissions', 'bitmask']);

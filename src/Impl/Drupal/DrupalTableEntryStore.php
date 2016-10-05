@@ -3,12 +3,12 @@
 namespace MakinaCorpus\ACL\Impl\Drupal;
 
 use MakinaCorpus\ACL\EntryListInterface;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Permission;
-use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\Store\EntryStoreInterface;
 use MakinaCorpus\ACL\Profile;
-use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
+use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 /**
  * This implementation will only allow a "view" permission for queries.
@@ -156,7 +156,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
 
         $rows = $this->database->query("SELECT * FROM {" . $this->table . "} WHERE resource_id = ?", [$resource->getId()]);
 
-        $builder = new EntryListBuilder($resource);
+        $builder = new NaiveEntryListBuilder($resource);
 
         foreach ($rows as $row) {
             $builder->add($row->profile_type, $row->profile_id, explode(',', $row->permissions));

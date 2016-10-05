@@ -1,17 +1,15 @@
 <?php
 
-namespace MakinaCorpus\ACL\Collector;
+namespace MakinaCorpus\ACL\Impl;
 
-use MakinaCorpus\ACL\Impl\NaiveEntry;
-use MakinaCorpus\ACL\Impl\NaiveEntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 
 /**
- * Entry list builder, this is what will be given to collector implementations
- * which ships a comprehensive and fluent domain language for users.
+ * Builds entry lists
  */
-final class EntryListBuilder
+final class NaiveEntryListBuilder implements EntryListBuilderInterface
 {
     private $resource;
     private $entries = [];
@@ -27,9 +25,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Get resource
-     *
-     * @return Resource
+     * {@inheritdoc}
      */
     public function getResource()
     {
@@ -37,7 +33,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Convert this object as entry list
+     * {@inheritdoc}
      */
     public function convertToEntryList()
     {
@@ -57,14 +53,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Add entry
-     *
-     * @param string $type
-     *   Profile type
-     * @param int|string $id
-     *   Profile identifier
-     * @param string|string[] $permission
-     *   Single permission or permission array
+     * {@inheritdoc}
      */
     public function add($type, $id, $permission)
     {
@@ -79,15 +68,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Relocate all permissions for a certain profile type to another
-     *
-     * @param string $previous
-     *   Profile type to remove
-     * @param string $next
-     *   Profile type that inherits from
-     * @param boolean $merge
-     *   If target already exists, and this is set to false, existing
-     *   permissions will be dropped before copy
+     * {@inheritdoc}
      */
     public function relocateType($previous, $next, $merge = true)
     {
@@ -109,19 +90,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Relocate all permissions for a certain profile
-     *
-     * @param string $previousType
-     *   Profile type to remove
-     * @param int|string $previousId
-     *   Profile identifier to remove
-     * @param string $nextType
-     *   Profile type that inherits from
-     * @param int|string $nextId
-     *   Profile identifier that inherits from
-     * @param boolean $merge
-     *   If target already exists, and this is set to false, existing
-     *   permissions will be dropped before copy
+     * {@inheritdoc}
      */
     public function relocate($previousType, $previousId, $nextType, $nextId, $merge = true)
     {
@@ -144,16 +113,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Has permission for
-     *
-     * @param string $type
-     *   Profile type
-     * @param int|string $id
-     *   Profile identifier
-     * @param string $permission
-     *   Single permission
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function has($type, $id = null, $permission = null)
     {
@@ -167,18 +127,7 @@ final class EntryListBuilder
     }
 
     /**
-     * Remove a single or set of permissions
-     *
-     * @param string $type
-     *   Profile type
-     * @param int|string $id
-     *   Profile identifier, if null is given remove all permissions for
-     *   the given profile type
-     * @param string $permission
-     *   Single permission or permission array, if null given remove all
-     *   permissions for the given profile
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function remove($type, $id = null, $permission = null)
     {

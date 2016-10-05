@@ -3,8 +3,8 @@
 namespace MakinaCorpus\ACL\Voter;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
-use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\EntryListInterface;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
@@ -62,7 +62,7 @@ class DynamicACLVoter implements VoterInterface
             return;
         }
 
-        $builder = new EntryListBuilder($resource);
+        $builder = new NaiveEntryListBuilder($resource);
 
         foreach ($this->collectors as $collector) {
             if ($collector->supports($resource->getType())) {

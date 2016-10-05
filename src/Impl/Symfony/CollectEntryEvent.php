@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Impl\Symfony;
 
-use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\Event;
@@ -19,9 +19,9 @@ class CollectEntryEvent extends Event
     /**
      * Default constructor
      *
-     * @param EntryListBuilder $builder
+     * @param EntryListBuilderInterface $builder
      */
-    public function __construct(EntryListBuilder $builder)
+    public function __construct(EntryListBuilderInterface $builder)
     {
         $this->builder = $builder;
     }
@@ -39,7 +39,7 @@ class CollectEntryEvent extends Event
     /**
      * Get entry list builder
      *
-     * @return EntryListBuilder
+     * @return EntryListBuilderInterface
      */
     public function getBuilder()
     {

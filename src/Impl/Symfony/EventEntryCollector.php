@@ -3,7 +3,7 @@
 namespace MakinaCorpus\ACL\Impl\Symfony;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
-use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -35,7 +35,7 @@ class EventEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function collect(EntryListBuilder $builder)
+    public function collect(EntryListBuilderInterface $builder)
     {
         $event = new CollectEntryEvent($builder);
         $this->dispatcher->dispatch(CollectEntryEvent::EVENT_COLLECT, $event);

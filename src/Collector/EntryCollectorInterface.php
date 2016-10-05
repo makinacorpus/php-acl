@@ -24,7 +24,7 @@ interface EntryCollectorInterface
     /**
      * Collect entries for resource
      *
-     * @param EntryListBuilder $entries
+     * @param EntryListBuilderInterface $entries
      */
-    public function collect(EntryListBuilder $builder);
+    public function collect(EntryListBuilderInterface $builder);
 }

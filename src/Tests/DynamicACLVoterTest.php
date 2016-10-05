@@ -45,9 +45,11 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests bacics, pretty much everything except edge case we'd find out later
+     * Do the real test, but adds some variations
+     *
+     * @param boolean $doPreload
      */
-    public function testBasicFeatures()
+    protected function doTheRealTest($doPreload = false)
     {
         // We are just going to do this:
         //  - group 1 (id is 100)
@@ -132,6 +134,10 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
         $groupB = $groupBId;
         $set1   = 'set1';
         $set2   = 'set2';
+
+        if ($doPreload) {
+            $this->manager->preload('content', range(1, 80));
+        }
 
         // Test reapatibility
         for ($i = 0; $i < 3; ++$i) {
@@ -229,5 +235,21 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
 
         $stop = microtime(true);
         echo "\nTook " . ceil(($stop - $start) * 1000) . " ms\n";
+    }
+
+    /**
+     * Tests bacics, pretty much everything except edge case we'd find out later
+     */
+    public function testBasicFeatures()
+    {
+        return $this->doTheRealTest(false);
+    }
+
+    /**
+     * Tests bacics, pretty much everything but with preload
+     */
+    public function testWithPreload()
+    {
+        return $this->doTheRealTest(true);
     }
 }

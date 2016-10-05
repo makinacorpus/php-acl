@@ -140,11 +140,43 @@ final class Manager
      *
      * Data will get cached, making the permission checks a lot faster.
      *
-     * @param mixed[] $resources
+     * @param ResourceCollection $resource
      */
-    public function preload(array $resources)
+    private function doPreload(ResourceCollection $resources)
     {
+        $type = $resources->getType();
 
+        foreach ($this->voters as $voter) {
+            if ($voter->supports($type)) {
+                $voter->preload($resources);
+            }
+        }
+    }
+
+    /**
+     * Create a resource collection
+     *
+     * @param string $type
+     * @param int[]|string[] $idList
+     *
+     * @return ResourceCollection
+     */
+    private function createCollection($type, array $idList)
+    {
+        return new ResourceCollection($type, $idList);
+    }
+
+    /**
+     * Preload data if necessary for resources
+     *
+     * Data will get cached, making the permission checks a lot faster.
+     *
+     * @param string $type
+     * @param int[]|string[] $idList
+     */
+    public function preload($type, array $idList)
+    {
+        $this->doPreload($this->createCollection($type, $idList));
     }
 
     /**

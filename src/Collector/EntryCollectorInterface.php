@@ -2,8 +2,6 @@
 
 namespace MakinaCorpus\ACL\Collector;
 
-use MakinaCorpus\ACL\Resource;
-
 /**
  * Entry collector is to be used in systems where ACL can be rebuilt at any
  * time programatically without storing them, this allows to use the store

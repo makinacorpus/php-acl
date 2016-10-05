@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\ACL;
 
+use MakinaCorpus\ACL\Impl\IdentityTrait;
+
 /**
  * Represent a single entry target (user)
  */

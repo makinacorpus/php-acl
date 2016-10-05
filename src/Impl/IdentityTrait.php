@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL;
+namespace MakinaCorpus\ACL\Impl;
 
 /**
  * Resource and profile types have this in common.

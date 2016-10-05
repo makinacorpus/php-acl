@@ -7,12 +7,13 @@ use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\ResourceCollection;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
 use MakinaCorpus\ACL\Voter\VoterInterface;
 
 /**
- * Default voter, uses ACL stored as EntryList instances by one or more
- * entry stores
+ * Same behavior as the ACLVoter, but allows to dynamically build ACL lists
+ * if necessary.
  */
 class DynamicACLVoter implements VoterInterface
 {
@@ -101,6 +102,16 @@ class DynamicACLVoter implements VoterInterface
         }
 
         return $list;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preload(ResourceCollection $resources)
+    {
+        foreach ($this->stores as $store) {
+            $store->loadAll($resources);
+        }
     }
 
     /**

@@ -6,8 +6,6 @@ use MakinaCorpus\ACL\Entry;
 use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\Cache\BitmaskEntry;
-use MakinaCorpus\ACL\Cache\BitmaskMap;
 
 /**
  * Entry list builder, this is what will be given to collector implementations

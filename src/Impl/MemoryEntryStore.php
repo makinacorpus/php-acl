@@ -4,6 +4,7 @@ namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\ResourceCollection;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 /**
@@ -34,6 +35,16 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
+    public function deleteAll(ResourceCollection $resources)
+    {
+        foreach ($resources as $resource) {
+            $this->delete($resource);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function load(Resource $resource)
     {
         $id = (string)$resource->getId();
@@ -41,6 +52,27 @@ class MemoryEntryStore implements EntryStoreInterface
         if (isset($this->entries[$resource->getType()][$id])) {
             return $this->entries[$resource->getType()][$id];
         }
+    }
+
+    /**
+     * Load all entries for the given resources
+     *
+     * @param ResourceCollection $resources
+     *
+     * @return EntryList[]
+     *   Each entry list for all resources, keys are the same as the $resources
+     *   array entry list: without this everything would fail since we cannot
+     *   use maps with objects as keys in PHP
+     */
+    public function loadAll(ResourceCollection $resources)
+    {
+        $ret = [];
+
+        foreach ($resources as $key => $resource) {
+            $ret[$key] = $this->load($resource);
+        }
+
+        return $ret;
     }
 
     /**

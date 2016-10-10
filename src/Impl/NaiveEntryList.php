@@ -23,11 +23,7 @@ final class NaiveEntryList implements EntryListInterface
     }
 
     /**
-     * Has the given permission
-     *
-     * @param string $permission
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function hasPermissionFor(Profile $profile, $permission)
     {
@@ -42,9 +38,7 @@ final class NaiveEntryList implements EntryListInterface
     }
 
     /**
-     * Is this instance empty
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function isEmpty()
     {

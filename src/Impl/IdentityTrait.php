@@ -2,6 +2,8 @@
 
 namespace MakinaCorpus\ACL\Impl;
 
+use MakinaCorpus\ACL\Identity;
+
 /**
  * Resource and profile types have this in common.
  *
@@ -11,6 +13,7 @@ trait IdentityTrait
 {
     private $type;
     private $id;
+    private $repr;
 
     /**
      * Default constructor
@@ -22,6 +25,7 @@ trait IdentityTrait
     {
         $this->type = $type;
         $this->id = $id;
+        $this->repr = Identity::getStringRepresentation($type, $id);
     }
 
     /**
@@ -42,6 +46,16 @@ trait IdentityTrait
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get generic identifier as string
+     *
+     * @return string
+     */
+    public function hasString()
+    {
+        return $this->repr;
     }
 
     /**

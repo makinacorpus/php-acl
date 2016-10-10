@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Cache;
+namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\Permission;
 
@@ -52,30 +52,25 @@ class BitmaskMap
         $value = 0;
 
         foreach ($permissions as $permission) {
-            if (!isset($this->map[$permission])) {
-                throw new \InvalidArgumentException(sprintf("permission '%s' cannot be masked", $permission));
-            }
-
-            $value += $this->map[$permission];
+            $value += $this->getBit($permission);
         }
 
         return $value;
     }
 
     /**
-     * Check if given value carries mask
+     * Get mask for the given permission
      *
-     * @param int $value
-     *   Reference value being stored
      * @param string $permission
-     *   Permission to check for
+     *
+     * @return int
      */
-    public function check($value, $permission)
+    public function getBit($permission)
     {
         if (isset($this->map[$permission])) {
-            return (int)$value & $this->map[$permission];
+            return $this->map[$permission];
         }
 
-        return false;
+        return 0;
     }
 }

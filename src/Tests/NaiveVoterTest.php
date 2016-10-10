@@ -15,7 +15,7 @@ use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
+class NaiveVoterTest extends \PHPUnit_Framework_TestCase
 {
     private $voter;
     private $entryCollector;
@@ -34,13 +34,18 @@ class DynamicACLVoterTest extends \PHPUnit_Framework_TestCase
         return $this->voter;
     }
 
+    protected function createVoter($storage, $collector)
+    {
+        return new DynamicACLVoter([$storage], [$collector]);
+    }
+
     protected function setUp()
     {
         $this->dispatcher       = new EventDispatcher();
         $this->entryCollector   = new EventEntryCollector($this->dispatcher);
         $this->profileCollector = new EventProfileCollector($this->dispatcher);
         $this->storage          = $this->createStorage();
-        $this->voter            = new DynamicACLVoter([$this->storage], [$this->entryCollector]);
+        $this->voter            = $this->createVoter($this->storage, $this->entryCollector);
         $this->manager          = new Manager([$this->voter], [$this->profileCollector], []);
     }
 

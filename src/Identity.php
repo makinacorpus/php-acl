@@ -40,4 +40,12 @@ final class Identity
 
         return spl_object_hash($object);
     }
+
+    /**
+     * Get string representation of the given item
+     */
+    static public function getStringRepresentation($type, $id)
+    {
+        return $type . '#' . $id;
+    }
 }

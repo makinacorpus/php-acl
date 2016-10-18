@@ -9,14 +9,14 @@ I do have lots to document here.
 
 ## Data types
 
-original: void
-id: int|string
-type: string
-permission: string
-profile: (type, id, ?object)
-resource: (type, id, ?object)
-entry: (profile, permission[], id) // ACE (Access Control Entry)
-entrylist: (resource, entry[]) // ACL (Access Control List)
+  - original: void
+  - id: int|string
+  - type: string
+  - permission: string
+  - profile: (type, id, ?object)
+  - resource: (type, id, ?object)
+  - entry: (profile, permission[], id) // ACE (Access Control Entry)
+  - entrylist: (resource, entry[]) // ACL (Access Control List)
 
 ## Objects
 

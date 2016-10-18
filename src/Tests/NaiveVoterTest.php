@@ -39,6 +39,11 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
         return new DynamicACLVoter([$storage], [$collector]);
     }
 
+    protected function createResourceConverters()
+    {
+        return [];
+    }
+
     protected function setUp()
     {
         $this->dispatcher       = new EventDispatcher();
@@ -46,7 +51,12 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
         $this->profileCollector = new EventProfileCollector($this->dispatcher);
         $this->storage          = $this->createStorage();
         $this->voter            = $this->createVoter($this->storage, $this->entryCollector);
-        $this->manager          = new Manager([$this->voter], [$this->profileCollector], []);
+        $this->manager          = new Manager([$this->voter], [$this->profileCollector], $this->createResourceConverters());
+    }
+
+    protected function createResource($id)
+    {
+        return new Resource('content', $id);
     }
 
     /**
@@ -148,7 +158,7 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
         for ($i = 0; $i < 3; ++$i) {
             // Test raw permissions
             for ($id = $ARange[0]; $id <= $ARange[1]; ++$id) {
-                $resource = new Resource('content', $id);
+                $resource = $this->createResource($id);
                 // Profiles
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
@@ -171,7 +181,7 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $BRange[0]; $id <= $BRange[1]; ++$id) {
-                $resource = new Resource('content', $id);
+                $resource = $this->createResource($id);
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::DELETE));
@@ -193,7 +203,7 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $ABRange[0]; $id <= $ABRange[1]; ++$id) {
-                $resource = new Resource('content', $id);
+                $resource = $this->createResource($id);
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
                 $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::DELETE));
@@ -215,7 +225,7 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
             }
             for ($id = $NoRange[0]; $id <= $NoRange[1]; ++$id) {
-                $resource = new Resource('content', $id);
+                $resource = $this->createResource($id);
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::DELETE));

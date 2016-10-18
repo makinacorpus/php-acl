@@ -51,7 +51,7 @@ interface EntryListBuilderInterface
     public function relocateType($previous, $next, $merge = true);
 
     /**
-     * Relocate all permissions for a certain profile
+     * Relocate all permissions for a certain profile to another
      *
      * @param string $previousType
      *   Profile type to remove

@@ -1,11 +1,9 @@
 # Simple ACL API for PHP
 
-This a playground/sandbox project.
+**This a playground/sandbox project.**
 
 This API is not meant to store ACLs but to provide a dynamic at runtime API
-to collect resources ACLs and to check for their validity.
-
-I do have lots to document here.
+to collect resources ACLs and to check for their validity. I do have lots to document here.
 
 ## Data types
 

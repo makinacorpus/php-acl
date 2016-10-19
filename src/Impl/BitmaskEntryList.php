@@ -4,6 +4,7 @@ namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\Identity;
 
 /**
  * Represent a full ACL for a single resource
@@ -37,6 +38,31 @@ final class BitmaskEntryList implements EntryListInterface
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEntries()
+    {
+        $ret = [];
+
+        foreach ($this->masks as $repr => $mask) {
+
+            list($type, $id) = Identity::fromString($repr);
+            $profile = new Profile($type, $id);
+
+            $permissions = [];
+            foreach ($this->map->getBitMap() as $permission => $value) {
+                if ($mask & $value) {
+                    $permissions[] = $permission;
+                }
+            }
+
+            $ret[] = new NaiveEntry($profile, $permissions);
+        }
+
+        return $ret;
     }
 
     /**

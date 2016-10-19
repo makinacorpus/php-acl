@@ -48,4 +48,18 @@ final class Identity
     {
         return $type . '#' . $id;
     }
+
+    /**
+     * From a string reprensentation, give type and identifier
+     */
+    static public function fromString($string)
+    {
+        // We do not check with false because 0 would mean the delimiter
+        // is the first char, and this would mean there is no type
+        if (!strpos($string, '#')) {
+            throw new \InvalidArgumentException("%s: is not a (type, id) representation");
+        }
+
+        return explode('#', $string, 2);
+    }
 }

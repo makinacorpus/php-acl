@@ -40,6 +40,14 @@ final class NaiveEntryList implements EntryListInterface
     /**
      * {@inheritdoc}
      */
+    public function getEntries()
+    {
+        return $this->entries;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEmpty()
     {
         foreach ($this->entries as $entry) {

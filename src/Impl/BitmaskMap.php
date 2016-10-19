@@ -59,6 +59,17 @@ class BitmaskMap
     }
 
     /**
+     * Get original permission to bit map
+     *
+     * @return int[]
+     *   Keys are permissions, values are bit values
+     */
+    public function getBitMap()
+    {
+        return $this->map;
+    }
+
+    /**
      * Get mask for the given permission
      *
      * @param string $permission

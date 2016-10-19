@@ -62,7 +62,7 @@ final class ProfileSet
             $ret[$profile->getType()][] = $profile->getId();
         }
         foreach ($ret as $type => $idList) {
-            $ret[$type] = implode(',', $idList);
+            $ret[$type] = $type . ':' . implode(',', $idList);
         }
 
         return implode(';', $ret);

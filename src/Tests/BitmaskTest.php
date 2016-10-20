@@ -3,6 +3,7 @@
 namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\BitmaskEntryListBuilder;
+use MakinaCorpus\ACL\Impl\BitmaskMap;
 
 class BitmaskTest extends DefaultTest
 {
@@ -14,6 +15,11 @@ class BitmaskTest extends DefaultTest
     protected function createBuilderFactory()
     {
         return BitmaskEntryListBuilder::class;
+    }
+
+    protected function createPermissionMap()
+    {
+        return new BitmaskMap();
     }
 
     /**

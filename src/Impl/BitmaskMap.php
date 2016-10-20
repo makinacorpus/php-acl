@@ -3,6 +3,7 @@
 namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\Permission;
+use MakinaCorpus\ACL\PermissionMap;
 
 /**
  * For this to work, there is no magic in the air, you need to provide the
@@ -10,38 +11,8 @@ use MakinaCorpus\ACL\Permission;
  *
  * We can help you generate one, and collect various calls to this API.
  */
-class BitmaskMap
+class BitmaskMap extends PermissionMap
 {
-    private $map = [];
-
-    /**
-     * Default constructor
-     *
-     * @param int[] $map
-     *   Keys are permission names, values are bitmasks
-     */
-    public function __construct(array $map = [])
-    {
-        if (!$map) {
-            // Provide sensible defaults
-            $map = [
-                Permission::COMMENT => 1,
-                Permission::DELETE => 2,
-                Permission::HIDE => 4,
-                Permission::LOCK => 8,
-                Permission::MOVE => 16,
-                Permission::SHARE => 32,
-                Permission::SHOW => 64,
-                Permission::TOUCH => 128,
-                Permission::UNLOCK => 256,
-                Permission::UPDATE => 512,
-                Permission::VIEW => 1024,
-            ];
-        }
-
-        $this->map = $map;
-    }
-
     /**
      * Build bitmask value from permission strings
      *

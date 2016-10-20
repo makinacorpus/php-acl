@@ -14,15 +14,24 @@ use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use MakinaCorpus\ACL\Impl\Symfony\ACLVoter;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DefaultTest extends \PHPUnit_Framework_TestCase
 {
+    const NON_EXISTING_PERMISSION = 'non_existing_permission';
+
     private $dispatcher;
     private $manager;
 
     final protected function getEventDispatcher()
     {
         return $this->dispatcher;
+    }
+
+    protected function createPermissionMap()
+    {
+        return null;
     }
 
     protected function createStorages()
@@ -58,6 +67,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
             $this->createEntryCollectors(),
             $this->createProfileCollectors(),
             $this->createResourceConverters(),
+            $this->createPermissionMap(),
             $this->createBuilderFactory()
         );
     }
@@ -106,14 +116,17 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 if ($id >= $ARange[0] && $id <= $ARange[1]) {
                     $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
                     $builder->add(Profile::USER, $user1Id, Permission::VIEW);
+                    $builder->add(Profile::USER, $user1Id, DefaultTest::NON_EXISTING_PERMISSION);
                 } else if ($id >= $BRange[0] && $id <= $BRange[1]) {
                     $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
                     $builder->add(Profile::USER, $user2Id, Permission::VIEW);
+                    $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
                 } else if ($id >= $ABRange[0] && $id <= $ABRange[1]) {
                     $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
                     $builder->add(Profile::USER, $user1Id, Permission::VIEW);
                     $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
                     $builder->add(Profile::USER, $user2Id, Permission::VIEW);
+                    $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
                 } else {
                     // Those are nowhere
                 }
@@ -123,7 +136,14 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         $this->dispatcher->addListener(
             CollectProfileEvent::EVENT_COLLECT,
             function (CollectProfileEvent $event) use ($user1Id, $user2Id, $groupAId, $groupBId) {
-                switch ($event->getBuilder()->getObject()) {
+                $object = $event->getBuilder()->getObject();
+
+                // For symfony testing
+                if ($object instanceof Token) {
+                    $object = $object->getOriginalObject();
+                }
+
+                switch ($object) {
                     case $user1Id:
                         $event->getBuilder()->add(Profile::USER, $user1Id);
                         break;
@@ -162,6 +182,9 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
             $this->manager->preload('content', range(1, 80));
         }
 
+        // We are also going to test Symfony voter
+        $symfonyVoter = new ACLVoter($this->manager);
+
         // Test reapatibility
         for ($i = 0; $i < 3; ++$i) {
             // Test raw permissions
@@ -184,9 +207,43 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::UPDATE));
                 $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,  Permission::VIEW));
+                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                // Non supported permissions should always return false, no matter what
+                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
+                // Assert that symfony voter supports it, there is no use in
+                // asserting that thousands of time, let's just do it here.
+                $this->assertSame(Voter::ACCESS_GRANTED, $symfonyVoter->vote(new Token($groupA), $resource, [Permission::VIEW]));
+                $this->assertSame(Voter::ACCESS_GRANTED, $symfonyVoter->vote(new Token($groupA), $resource, [Permission::UPDATE]));
+                $this->assertSame(Voter::ACCESS_GRANTED, $symfonyVoter->vote(new Token($groupA), $resource, [Permission::DELETE]));
+                $this->assertSame(Voter::ACCESS_GRANTED, $symfonyVoter->vote(new Token($user1), $resource, [Permission::VIEW]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($user1), $resource, [Permission::UPDATE]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($user1), $resource, [Permission::DELETE]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($groupB), $resource, [Permission::VIEW]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($groupB), $resource, [Permission::UPDATE]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($groupB), $resource, [Permission::DELETE]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($user2), $resource, [Permission::VIEW]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($user2), $resource, [Permission::UPDATE]));
+                $this->assertSame(Voter::ACCESS_DENIED, $symfonyVoter->vote(new Token($user2), $resource, [Permission::DELETE]));
+                // Assert that symfony voter abstains for non supported permissions
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupA), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupA), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupA), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user1), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user1), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user1), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupB), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupB), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($groupB), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user2), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user2), $resource, [self::NON_EXISTING_PERMISSION]));
+                $this->assertSame(Voter::ACCESS_ABSTAIN, $symfonyVoter->vote(new Token($user2), $resource, [self::NON_EXISTING_PERMISSION]));
             }
             for ($id = $BRange[0]; $id <= $BRange[1]; ++$id) {
                 $resource = $this->createResource($id);
@@ -209,6 +266,13 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                // Non supported permissions should always return false, no matter what
+                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
             }
             for ($id = $ABRange[0]; $id <= $ABRange[1]; ++$id) {
                 $resource = $this->createResource($id);
@@ -231,6 +295,13 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
                 $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                // Non supported permissions should always return false, no matter what
+                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
             }
             for ($id = $NoRange[0]; $id <= $NoRange[1]; ++$id) {
                 $resource = $this->createResource($id);
@@ -253,6 +324,13 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 $this->assertFalse($this->manager->isGranted($resource, $set2,  Permission::VIEW));
                 $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
                 $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                // Non supported permissions should always return false, no matter what
+                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
             }
         }
 

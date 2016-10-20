@@ -38,7 +38,9 @@ final class Identity
             return get_class($object) . '#' . $id;
         }
 
-        return spl_object_hash($object);
+        // @todo we have a problem there, spl_object_hash() cannot be used
+        //   for proof we already had collisions within unit tests
+        return null;
     }
 
     /**

@@ -15,9 +15,9 @@ final class Manager
     private $resourceCollectors = [];
     private $profileCollectors = [];
     private $resourceConverters = [];
+    private $permissionMap;
     private $builderClass = NaiveEntryListBuilder::class;
     private $profileCache = [];
-    private $permissionCache = [];
 
     /**
      * Default constructor
@@ -26,19 +26,27 @@ final class Manager
      * @param EntryCollectorInterface[] $resourceCollectors
      * @param ProfileCollectorInterface[] $profileCollectors
      * @param ResourceConverterInterface[] $resourceConverters
+     * @param PermissionMap $permissionMap
+     * @param string $builderClass
      */
     public function __construct(
         array $entryStores,
         array $resourceCollectors,
         array $profileCollectors = [],
         array $resourceConverters = [],
+        PermissionMap $permissionMap = null,
         $builderClass = NaiveEntryListBuilder::class
     ) {
         $this->entryStores = $entryStores;
         $this->resourceCollectors = $resourceCollectors;
         $this->profileCollectors = $profileCollectors;
         $this->resourceConverters = $resourceConverters;
+        $this->permissionMap = $permissionMap;
         $this->builderClass = $builderClass;
+
+        if (null === $this->permissionMap) {
+            $this->permissionMap = new PermissionMap();
+        }
     }
 
     /**
@@ -175,6 +183,10 @@ final class Manager
 
         $id = Identity::computeUniqueIdentifier($object);
 
+        if (null === $id) {
+            return $this->collectProfileSetFor($object);
+        }
+
         if (isset($this->profileCache[$id])) {
             return $this->profileCache[$id];
         }
@@ -188,7 +200,6 @@ final class Manager
     public function refresh()
     {
         $this->profileCache = [];
-        $this->permissionCache = [];
     }
 
     /**
@@ -203,29 +214,15 @@ final class Manager
     private function doCheck(Resource $resource, ProfileSet $profiles, $permission)
     {
         $type = $resource->getType();
-//        $id   = $resource->getId();
 
         foreach ($this->entryStores as $store) {
             if ($store->supports($type)) {
                 foreach ($profiles->getAll() as $profile) {
-
-                    // Handles internal cache, at the profile level and not the
-                    // profile set level, it help mutualizing if more than one
-                    // profile set using the same profile(s) partially are being
-                    // called
-//                    $key = $profile->asString();
-//                     if (isset($this->permissionCache[$type][$id][$key][$permission])) {
-//                         return $this->permissionCache[$type][$id][$key][$permission];
-//                     }
-
                     if ($list = $this->getEntryListFor($resource)) {
                         if ($list->hasPermissionFor($profile, $permission)) {
-//                            return $this->permissionCache[$type][$id][$key][$permission] = true;
                               return true;
                         }
                     }
-
-                    //$this->permissionCache[$type][$id][$key][$permission] = false;
                 }
             }
         }
@@ -263,6 +260,35 @@ final class Manager
     }
 
     /**
+     * Does this manager supports the given permission
+     *
+     * @param string $permission
+     */
+    public function supportsPermission($permission)
+    {
+        return $this->permissionMap->supports($permission);
+    }
+
+    /**
+     * Is the given object supported
+     *
+     * @param mixed $object
+     *
+     * @return boolean
+     */
+    public function supportsResource($object)
+    {
+        // @todo find a better way
+        try {
+            $this->expandResource($object);
+            return true;
+        } catch (\InvalidArgumentException $e) {
+            // Just leave this empty
+        }
+        return false;
+    }
+
+    /**
      * Preload data if necessary for resources
      *
      * Data will get cached, making the permission checks a lot faster.
@@ -286,6 +312,10 @@ final class Manager
      */
     public function isGranted($resource, $profile, $permission)
     {
+        if (!$this->supportsPermission($permission)) {
+            return false;
+        }
+
         $profiles = $this->expandProfile($profile);
 
         if (!$profiles) {

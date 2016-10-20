@@ -4,6 +4,7 @@ namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\PermissionMap;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * For this to work, there is no magic in the air, you need to provide the
@@ -13,6 +14,14 @@ use MakinaCorpus\ACL\PermissionMap;
  */
 class BitmaskMap extends PermissionMap
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function createEntryListBuilder(Resource $resource)
+    {
+        return new BitmaskEntryListBuilder($resource);
+    }
+
     /**
      * Build bitmask value from permission strings
      *

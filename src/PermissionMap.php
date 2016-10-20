@@ -3,6 +3,8 @@
 namespace MakinaCorpus\ACL;
 
 use MakinaCorpus\ACL\Permission;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 
 /**
  * Map of supported permissions
@@ -37,6 +39,16 @@ class PermissionMap
         }
 
         $this->map = $map;
+    }
+
+    /**
+     * Create entry list builder
+     *
+     * @return EntryListBuilderInterface
+     */
+    public function createEntryListBuilder(Resource $resource)
+    {
+        return new NaiveEntryListBuilder($resource);
     }
 
     /**

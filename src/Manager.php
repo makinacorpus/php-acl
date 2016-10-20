@@ -16,7 +16,6 @@ final class Manager
     private $profileCollectors = [];
     private $resourceConverters = [];
     private $permissionMap;
-    private $builderClass = NaiveEntryListBuilder::class;
     private $profileCache = [];
 
     /**
@@ -27,22 +26,19 @@ final class Manager
      * @param ProfileCollectorInterface[] $profileCollectors
      * @param ResourceConverterInterface[] $resourceConverters
      * @param PermissionMap $permissionMap
-     * @param string $builderClass
      */
     public function __construct(
         array $entryStores,
         array $resourceCollectors,
         array $profileCollectors = [],
         array $resourceConverters = [],
-        PermissionMap $permissionMap = null,
-        $builderClass = NaiveEntryListBuilder::class
+        PermissionMap $permissionMap = null
     ) {
         $this->entryStores = $entryStores;
         $this->resourceCollectors = $resourceCollectors;
         $this->profileCollectors = $profileCollectors;
         $this->resourceConverters = $resourceConverters;
         $this->permissionMap = $permissionMap;
-        $this->builderClass = $builderClass;
 
         if (null === $this->permissionMap) {
             $this->permissionMap = new PermissionMap();
@@ -73,16 +69,6 @@ final class Manager
     }
 
     /**
-     * Create the builder instance
-     *
-     * @return EntryListBuilderInterface
-     */
-    private function createBuilder(Resource $resource)
-    {
-        return new NaiveEntryListBuilder($resource);
-    }
-
-    /**
      * Collect entry list for the given resource
      *
      * @param Resource $resource
@@ -98,7 +84,7 @@ final class Manager
             return;
         }
 
-        $builder = $this->createBuilder($resource);
+        $builder = $this->permissionMap->createEntryListBuilder($resource);
 
         foreach ($this->resourceCollectors as $collector) {
             if ($collector->supports($resource->getType())) {

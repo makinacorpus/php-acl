@@ -2,20 +2,20 @@
 
 namespace MakinaCorpus\ACL\Tests;
 
-use MakinaCorpus\ACL\Impl\BitmaskDynamicACLVoter;
-use MakinaCorpus\ACL\Impl\BitmaskMap;
-use MakinaCorpus\ACL\Impl\MemoryEntryStore;
+use MakinaCorpus\ACL\Converter\DynamicResourceConverter;
 
-class BitmaskVoterTest extends NaiveVoterTest
+class StupidNaiveTest extends DefaultTest
 {
-    protected function createStorage()
+    protected function createResource($id)
     {
-        return new MemoryEntryStore();
+        return new StupidClass($id);
     }
 
-    protected function createVoter($storage, $collector)
+    protected function createResourceConverters()
     {
-        return new BitmaskDynamicACLVoter([$storage], [$collector], new BitmaskMap());
+        return [
+            new DynamicResourceConverter(),
+        ];
     }
 
     /**

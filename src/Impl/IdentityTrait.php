@@ -53,7 +53,7 @@ trait IdentityTrait
      *
      * @return string
      */
-    public function hasString()
+    public function asString()
     {
         return $this->repr;
     }

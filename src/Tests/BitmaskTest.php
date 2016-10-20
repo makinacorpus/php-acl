@@ -2,20 +2,18 @@
 
 namespace MakinaCorpus\ACL\Tests;
 
-use MakinaCorpus\ACL\Converter\DynamicResourceConverter;
+use MakinaCorpus\ACL\Impl\BitmaskEntryListBuilder;
 
-class StupidBitmaskVoterTest extends BitmaskVoterTest
+class BitmaskTest extends DefaultTest
 {
-    protected function createResource($id)
-    {
-        return new StupidClass($id);
-    }
+//     protected function createVoter($storage, $collector)
+//     {
+//         return new BitmaskDynamicACLVoter([$storage], [$collector], new BitmaskMap());
+//     }
 
-    protected function createResourceConverters()
+    protected function createBuilderFactory()
     {
-        return [
-            new DynamicResourceConverter(),
-        ];
+        return BitmaskEntryListBuilder::class;
     }
 
     /**

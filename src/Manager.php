@@ -2,31 +2,43 @@
 
 namespace MakinaCorpus\ACL;
 
+use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
-use MakinaCorpus\ACL\Voter\VoterInterface;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
+use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 final class Manager
 {
-    private $voters = [];
+    private $entryStores = [];
+    private $resourceCollectors = [];
     private $profileCollectors = [];
     private $resourceConverters = [];
+    private $builderClass = NaiveEntryListBuilder::class;
     private $profileCache = [];
     private $permissionCache = [];
 
     /**
      * Default constructor
      *
-     * @param VoterInterface[] $voters
+     * @param EntryStoreInterface[] $entryStores
+     * @param EntryCollectorInterface[] $resourceCollectors
      * @param ProfileCollectorInterface[] $profileCollectors
      * @param ResourceConverterInterface[] $resourceConverters
      */
-    public function __construct(array $voters, array $profileCollectors = [], array $resourceConverters = [])
-    {
-        $this->voters = $voters;
+    public function __construct(
+        array $entryStores,
+        array $resourceCollectors,
+        array $profileCollectors = [],
+        array $resourceConverters = [],
+        $builderClass = NaiveEntryListBuilder::class
+    ) {
+        $this->entryStores = $entryStores;
+        $this->resourceCollectors = $resourceCollectors;
         $this->profileCollectors = $profileCollectors;
         $this->resourceConverters = $resourceConverters;
+        $this->builderClass = $builderClass;
     }
 
     /**
@@ -50,6 +62,74 @@ final class Manager
         }
 
         throw new \InvalidArgumentException("cannot convert object to resource");
+    }
+
+    /**
+     * Create the builder instance
+     *
+     * @return EntryListBuilderInterface
+     */
+    private function createBuilder(Resource $resource)
+    {
+        return new NaiveEntryListBuilder($resource);
+    }
+
+    /**
+     * Collect entry list for the given resource
+     *
+     * @param Resource $resource
+     *
+     * @return EntryListInterface
+     */
+    private function collectEntryListFor(Resource $resource)
+    {
+        // Having an empty list of collects is valid, it just means that the
+        // business layer deals with permissions by itself, using the store
+        // directly, which is definitely legal
+        if (empty($this->resourceCollectors)) {
+            return;
+        }
+
+        $builder = $this->createBuilder($resource);
+
+        foreach ($this->resourceCollectors as $collector) {
+            if ($collector->supports($resource->getType())) {
+                $collector->collect($builder);
+            }
+        }
+
+        return $builder->convertToEntryList();
+    }
+
+    /**
+     * Get entry list for
+     *
+     * @param Resource $resource
+     *
+     * @return EntryListInterface
+     */
+    private function getEntryListFor(Resource $resource)
+    {
+        $list = null;
+
+        foreach ($this->entryStores as $store) {
+            if ($store->supports($resource->getType())) {
+                if ($list = $store->load($resource)) {
+                    break;
+                }
+            }
+        }
+
+        if (!$list) {
+            $list = $this->collectEntryListFor($resource);
+
+            // @todo should we call this at all?
+            if ($list && $store) {
+                $store->save($resource, $list);
+            }
+        }
+
+        return $list;
     }
 
     /**
@@ -122,12 +202,30 @@ final class Manager
      */
     private function doCheck(Resource $resource, ProfileSet $profiles, $permission)
     {
-        foreach ($profiles->getAll() as $profile) {
-            foreach ($this->voters as $voter) {
-                if ($voter->supports($resource->getType())) {
-                    if ($voter->vote($resource, $profile, $permission)) {
-                        return true;
+        $type = $resource->getType();
+//        $id   = $resource->getId();
+
+        foreach ($this->entryStores as $store) {
+            if ($store->supports($type)) {
+                foreach ($profiles->getAll() as $profile) {
+
+                    // Handles internal cache, at the profile level and not the
+                    // profile set level, it help mutualizing if more than one
+                    // profile set using the same profile(s) partially are being
+                    // called
+//                    $key = $profile->asString();
+//                     if (isset($this->permissionCache[$type][$id][$key][$permission])) {
+//                         return $this->permissionCache[$type][$id][$key][$permission];
+//                     }
+
+                    if ($list = $this->getEntryListFor($resource)) {
+                        if ($list->hasPermissionFor($profile, $permission)) {
+//                            return $this->permissionCache[$type][$id][$key][$permission] = true;
+                              return true;
+                        }
                     }
+
+                    //$this->permissionCache[$type][$id][$key][$permission] = false;
                 }
             }
         }
@@ -144,11 +242,9 @@ final class Manager
      */
     private function doPreload(ResourceCollection $resources)
     {
-        $type = $resources->getType();
-
-        foreach ($this->voters as $voter) {
-            if ($voter->supports($type)) {
-                $voter->preload($resources);
+        foreach ($this->entryStores as $store) {
+            if ($store->supports($resources->getType())) {
+                $store->loadAll($resources);
             }
         }
     }
@@ -198,14 +294,6 @@ final class Manager
 
         $resource = $this->expandResource($resource);
 
-        $cid  = $profiles->getCacheIdentifier();
-        $type = $resource->getType();
-        $id   = $resource->getId();
-
-        if (isset($this->permissionCache[$cid][$type][$id][$permission])) {
-            return $this->permissionCache[$cid][$type][$id][$permission];
-        }
-
-        return $this->permissionCache[$cid][$type][$id][$permission] = $this->doCheck($resource, $profiles, $permission);
+        return $this->doCheck($resource, $profiles, $permission);
     }
 }

@@ -4,7 +4,7 @@ namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Converter\DynamicResourceConverter;
 
-class StupidVoterTest extends NaiveVoterTest
+class StupidBitmaskTest extends BitmaskTest
 {
     protected function createResource($id)
     {

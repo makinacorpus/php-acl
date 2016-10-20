@@ -3,6 +3,7 @@
 namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\MemoryEntryStore;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
 use MakinaCorpus\ACL\Impl\Symfony\CollectProfileEvent;
 use MakinaCorpus\ACL\Impl\Symfony\EventEntryCollector;
@@ -11,32 +12,22 @@ use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\Voter\DynamicACLVoter;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class NaiveVoterTest extends \PHPUnit_Framework_TestCase
+class DefaultTest extends \PHPUnit_Framework_TestCase
 {
-    private $voter;
-    private $entryCollector;
-    private $profileCollector;
     private $dispatcher;
-    private $storage;
     private $manager;
 
-    protected function createStorage()
+    final protected function getEventDispatcher()
     {
-        return new MemoryEntryStore();
+        return $this->dispatcher;
     }
 
-    protected function getVoter()
+    protected function createStorages()
     {
-        return $this->voter;
-    }
-
-    protected function createVoter($storage, $collector)
-    {
-        return new DynamicACLVoter([$storage], [$collector]);
+        return [new MemoryEntryStore()];
     }
 
     protected function createResourceConverters()
@@ -44,14 +35,31 @@ class NaiveVoterTest extends \PHPUnit_Framework_TestCase
         return [];
     }
 
+    protected function createProfileCollectors()
+    {
+        return [new EventProfileCollector($this->getEventDispatcher())];
+    }
+
+    protected function createEntryCollectors()
+    {
+        return [new EventEntryCollector($this->getEventDispatcher())];
+    }
+
+    protected function createBuilderFactory()
+    {
+        return NaiveEntryListBuilder::class;
+    }
+
     protected function setUp()
     {
         $this->dispatcher       = new EventDispatcher();
-        $this->entryCollector   = new EventEntryCollector($this->dispatcher);
-        $this->profileCollector = new EventProfileCollector($this->dispatcher);
-        $this->storage          = $this->createStorage();
-        $this->voter            = $this->createVoter($this->storage, $this->entryCollector);
-        $this->manager          = new Manager([$this->voter], [$this->profileCollector], $this->createResourceConverters());
+        $this->manager          = new Manager(
+            $this->createStorages(),
+            $this->createEntryCollectors(),
+            $this->createProfileCollectors(),
+            $this->createResourceConverters(),
+            $this->createBuilderFactory()
+        );
     }
 
     protected function createResource($id)

@@ -31,7 +31,7 @@ final class BitmaskEntryList implements EntryListInterface
      */
     public function hasPermissionFor(Profile $profile, $permission)
     {
-        $repr = $profile->hasString();
+        $repr = $profile->asString();
 
         if (isset($this->masks[$repr])) {
             return $this->masks[$repr] & $this->map->getBit($permission);

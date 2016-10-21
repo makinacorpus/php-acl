@@ -25,9 +25,9 @@
     },
     "suggests" : {
         "symfony/event-dispatcher" : "Brings dynamic ACL collect events"
-    }
-    "autoload": {
-        "psr-4": {
+    },
+    "autoload" : {
+        "psr-4" : {
             "MakinaCorpus\\ACL\\" : "src/"
         }
     }

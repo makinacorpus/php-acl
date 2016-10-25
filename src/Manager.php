@@ -6,7 +6,6 @@ use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
-use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 final class Manager
@@ -181,14 +180,6 @@ final class Manager
     }
 
     /**
-     * Empty caches
-     */
-    public function refresh()
-    {
-        $this->profileCache = [];
-    }
-
-    /**
      * Do the real permissions check
      *
      * @param Resource $resource
@@ -243,6 +234,56 @@ final class Manager
     private function createCollection($type, array $idList)
     {
         return new ResourceCollection($type, $idList);
+    }
+
+    /**
+     * Empty caches
+     */
+    public function refresh()
+    {
+        $this->profileCache = [];
+    }
+
+    /**
+     * Collect entry list for given resource
+     *
+     * @param mixed $object
+     *   A resource
+     *
+     * @return EntryListInterface[]
+     */
+    public function collectEntryListAll($object)
+    {
+        try {
+            $resource = $this->expandResource($object);
+        } catch (\InvalidArgumentException $e) {
+            return [];
+        }
+
+        $ret = [];
+        $type = $resource->getType();
+
+        foreach ($this->entryStores as $store) {
+            if ($store->supports($type)) {
+                if ($list = $this->getEntryListFor($resource)) {
+                    $ret[] = $list;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Collect profiles for the given object
+     *
+     * @param mixed $object
+     *
+     * @return ProfileSet
+     */
+    public function collectProfiles($object)
+    {
+        return $this->expandProfile($object);
     }
 
     /**

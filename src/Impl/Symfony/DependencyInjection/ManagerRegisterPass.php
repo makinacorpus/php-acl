@@ -2,12 +2,14 @@
 
 namespace MakinaCorpus\ACL\Impl\Symfony\DependencyInjection;
 
+use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
-use MakinaCorpus\ACL\Voter\VoterInterface;
+use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Registers all dynamic ACL voter dependencies, unregister it if there's not.
@@ -26,15 +28,18 @@ class ManagerRegisterPass implements CompilerPassInterface
             return;
         }
 
-        $voters             = $this->collectTaggedServices($container, 'acl.voter', VoterInterface::class);
+        $entryStores        = $this->collectTaggedServices($container, 'acl.entry_store', EntryStoreInterface::class);
+        $resourceCollectors = $this->collectTaggedServices($container, 'acl.entry_collector', EntryCollectorInterface::class);
         $profileCollectors  = $this->collectTaggedServices($container, 'acl.profile_collector', ProfileCollectorInterface::class);
         $resourceConverters = $this->collectTaggedServices($container, 'acl.resource_converter', ResourceConverterInterface::class);
 
         $definition = $container->getDefinition('acl.manager');
         $definition->setArguments([
-            $this->mapIdToReference($voters),
+            $this->mapIdToReference($entryStores),
+            $this->mapIdToReference($resourceCollectors),
             $this->mapIdToReference($profileCollectors),
             $this->mapIdToReference($resourceConverters),
+            new Reference('acl.permission_map')
         ]);
     }
 }

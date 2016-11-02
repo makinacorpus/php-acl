@@ -23,7 +23,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
      *
      * @return array
      */
-    static public function getTableSchema()
+    static public function getDefaultTableSchema()
     {
         return [
             'fields' => [
@@ -55,7 +55,6 @@ class DrupalTableEntryStore implements EntryStoreInterface
                 'permissions' => [
                     'type'      => 'text',
                     'not null'  => true,
-                    'default'   => '',
                 ],
                 'bitmask' => [
                     'type'      => 'int',
@@ -100,6 +99,27 @@ class DrupalTableEntryStore implements EntryStoreInterface
         $this->type = $type;
         $this->viewPermission = $viewPermission;
         $this->tablesToJoin = [];
+    }
+
+    /**
+     * Get table name
+     *
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->table;
+    }
+
+    /**
+     * Get default table schema
+     *
+     * @return array
+     *   Schema suitable for the Drupal Schema API
+     */
+    public function getTableSchema()
+    {
+        return self::getDefaultTableSchema();
     }
 
     /**

@@ -7,11 +7,6 @@ use MakinaCorpus\ACL\Impl\BitmaskMap;
 
 class BitmaskTest extends DefaultTest
 {
-//     protected function createVoter($storage, $collector)
-//     {
-//         return new BitmaskDynamicACLVoter([$storage], [$collector], new BitmaskMap());
-//     }
-
     protected function createBuilderFactory()
     {
         return BitmaskEntryListBuilder::class;

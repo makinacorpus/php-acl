@@ -61,8 +61,8 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->dispatcher       = new EventDispatcher();
-        $this->manager          = new Manager(
+        $this->dispatcher = new EventDispatcher();
+        $this->manager = new Manager(
             $this->createStorages(),
             $this->createEntryCollectors(),
             $this->createProfileCollectors(),

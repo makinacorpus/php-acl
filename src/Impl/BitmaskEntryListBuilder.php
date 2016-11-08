@@ -20,11 +20,13 @@ final class BitmaskEntryListBuilder implements EntryListBuilderInterface
      * Default constructor
      *
      * @param Resource $resource
+     * @param mixed $object
      * @param BitmaskMap $map
      */
-    public function __construct(Resource $resource, BitmaskMap $map = null)
+    public function __construct(Resource $resource, $object, BitmaskMap $map = null)
     {
         $this->resource = $resource;
+        $this->object = $object;
 
         if (!$map) {
             $map = new BitmaskMap();

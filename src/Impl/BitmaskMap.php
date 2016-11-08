@@ -17,9 +17,9 @@ class BitmaskMap extends PermissionMap
     /**
      * {@inheritdoc}
      */
-    public function createEntryListBuilder(Resource $resource)
+    public function createEntryListBuilder(Resource $resource, $object)
     {
-        return new BitmaskEntryListBuilder($resource);
+        return new BitmaskEntryListBuilder($resource, $object);
     }
 
     /**

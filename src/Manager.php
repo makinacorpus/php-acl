@@ -16,6 +16,7 @@ final class Manager
     private $resourceConverters = [];
     private $permissionMap;
     private $profileCache = [];
+    private $debug = false;
 
     /**
      * Default constructor
@@ -25,13 +26,15 @@ final class Manager
      * @param ProfileCollectorInterface[] $profileCollectors
      * @param ResourceConverterInterface[] $resourceConverters
      * @param PermissionMap $permissionMap
+     * @param boolean $debug
      */
     public function __construct(
         array $entryStores,
         array $resourceCollectors,
         array $profileCollectors = [],
         array $resourceConverters = [],
-        PermissionMap $permissionMap = null
+        PermissionMap $permissionMap = null,
+        $debug = false
     ) {
         $this->entryStores = $entryStores;
         $this->resourceCollectors = $resourceCollectors;
@@ -42,6 +45,18 @@ final class Manager
         if (null === $this->permissionMap) {
             $this->permissionMap = new PermissionMap();
         }
+
+        $this->setDebug($debug);
+    }
+
+    /**
+     * Set debug mode
+     *
+     * @param boolean $debug
+     */
+    public function setDebug($debug = true)
+    {
+        $this->debug = $debug;
     }
 
     /**
@@ -71,10 +86,11 @@ final class Manager
      * Collect entry list for the given resource
      *
      * @param Resource $resource
+     * @param mixed $object
      *
      * @return EntryListInterface
      */
-    private function collectEntryListFor(Resource $resource)
+    private function collectEntryListFor(Resource $resource, $object)
     {
         // Having an empty list of collects is valid, it just means that the
         // business layer deals with permissions by itself, using the store
@@ -83,11 +99,11 @@ final class Manager
             return;
         }
 
-        $builder = $this->permissionMap->createEntryListBuilder($resource);
+        $builder = $this->permissionMap->createEntryListBuilder($resource, $object);
 
         foreach ($this->resourceCollectors as $collector) {
             if ($collector->supports($resource->getType())) {
-                $collector->collect($builder);
+                $collector->collectEntryLists($builder);
             }
         }
 
@@ -101,9 +117,10 @@ final class Manager
      *
      * @return EntryListInterface
      */
-    private function getEntryListFor(Resource $resource)
+    private function getEntryListFor(Resource $resource, $object)
     {
         $list = null;
+        $store = null;
 
         foreach ($this->entryStores as $store) {
             if ($store->supports($resource->getType())) {
@@ -114,10 +131,10 @@ final class Manager
         }
 
         if (!$list) {
-            $list = $this->collectEntryListFor($resource);
+            $list = $this->collectEntryListFor($resource, $object);
 
             // @todo should we call this at all?
-            if ($list && $store) {
+            if ($list && !$list->isEmpty() && $store) {
                 $store->save($resource, $list);
             }
         }
@@ -144,7 +161,7 @@ final class Manager
         $builder = new ProfileSetBuilder($object);
 
         foreach ($this->profileCollectors as $collector) {
-            $collector->collect($builder);
+            $collector->collectProfiles($builder);
         }
 
         return $builder->convertToProfileSet();
@@ -182,25 +199,29 @@ final class Manager
     /**
      * Do the real permissions check
      *
-     * @param Resource $resource
+     * @param mixed $object
      * @param ProfileSet $profiles
      * @param string $permission
      *
      * @return boolean
      */
-    private function doCheck(Resource $resource, ProfileSet $profiles, $permission)
+    private function doCheck($object, ProfileSet $profiles, $permission)
     {
-        $type = $resource->getType();
+        if ($object instanceof Resource) {
+            $resource = $object;
+        } else {
+            $resource = $this->expandResource($object);
+        }
 
-        foreach ($this->entryStores as $store) {
-            if ($store->supports($type)) {
-                foreach ($profiles->getAll() as $profile) {
-                    if ($list = $this->getEntryListFor($resource)) {
-                        if ($list->hasPermissionFor($profile, $permission)) {
-                              return true;
-                        }
-                    }
-                }
+        $list = $this->getEntryListFor($resource, $object);
+
+        if (!$list || $list->isEmpty()) {
+            return false;
+        }
+
+        foreach ($profiles->getAll() as $profile) {
+            if ($list->hasPermissionFor($profile, $permission)) {
+                return true;
             }
         }
 
@@ -257,6 +278,10 @@ final class Manager
         try {
             $resource = $this->expandResource($object);
         } catch (\InvalidArgumentException $e) {
+            if ($this->debug) {
+                // @todo let exception or trigger meaningful debug message
+            }
+
             return [];
         }
 
@@ -348,8 +373,6 @@ final class Manager
         if (!$profiles) {
             return false;
         }
-
-        $resource = $this->expandResource($resource);
 
         return $this->doCheck($resource, $profiles, $permission);
     }

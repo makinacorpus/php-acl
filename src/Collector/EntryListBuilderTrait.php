@@ -10,16 +10,29 @@ use MakinaCorpus\ACL\Resource;
 trait EntryListBuilderTrait /* implements EntryListBuilderInterface */
 {
     private $resource;
+    private $object;
     private $entries = [];
 
     /**
      * Default constructor
      *
      * @param Resource $resource
+     * @param mixed $object
      */
-    public function __construct(Resource $resource)
+    public function __construct(Resource $resource, $object)
     {
         $this->resource = $resource;
+        $this->object = $object;
+    }
+
+    /**
+     * Get object
+     *
+     * @return mixed
+     */
+    public function getObject()
+    {
+        return $this->object;
     }
 
     /**

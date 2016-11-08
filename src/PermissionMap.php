@@ -44,11 +44,14 @@ class PermissionMap
     /**
      * Create entry list builder
      *
+     * @param Resource $resource
+     * @param mixed $object
+     *
      * @return EntryListBuilderInterface
      */
-    public function createEntryListBuilder(Resource $resource)
+    public function createEntryListBuilder(Resource $resource, $object)
     {
-        return new NaiveEntryListBuilder($resource);
+        return new NaiveEntryListBuilder($resource, $object);
     }
 
     /**

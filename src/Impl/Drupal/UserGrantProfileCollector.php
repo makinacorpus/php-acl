@@ -12,7 +12,7 @@ use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
  */
 class UserGrantProfileCollector implements ProfileCollectorInterface
 {
-    public function collect (ProfileSetBuilder $builder)
+    public function collectProfiles(ProfileSetBuilder $builder)
     {
         $object = $builder->getObject();
 

@@ -14,5 +14,5 @@ interface ProfileCollectorInterface
      *
      * @param ProfileSetBuilder $builder
      */
-    public function collect(ProfileSetBuilder $builder);
+    public function collectProfiles(ProfileSetBuilder $builder);
 }

@@ -27,7 +27,7 @@ class CallbackEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function collect(EntryListBuilderInterface $builder)
+    public function collectEntryLists(EntryListBuilderInterface $builder)
     {
         call_user_func($this->callback, $builder);
     }

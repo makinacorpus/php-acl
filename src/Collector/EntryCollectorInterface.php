@@ -26,5 +26,5 @@ interface EntryCollectorInterface
      *
      * @param EntryListBuilderInterface $entries
      */
-    public function collect(EntryListBuilderInterface $builder);
+    public function collectEntryLists(EntryListBuilderInterface $builder);
 }

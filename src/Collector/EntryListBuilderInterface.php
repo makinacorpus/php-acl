@@ -19,6 +19,13 @@ interface EntryListBuilderInterface
     public function getResource();
 
     /**
+     * Get the original object being checked
+     *
+     * @return mixed
+     */
+    public function getObject();
+
+    /**
      * Convert this object as entry list
      *
      * @return EntryListInterface

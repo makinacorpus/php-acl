@@ -29,10 +29,10 @@ entrystore(?type):
   - delete(resource)
 
 profilecollector(?type) // Integration with framework
-  - collect(resource) : profileset
+  - collectProfiles(resource) : profileset
 
 resourcecollector(?type) // Integration with framework
-  - collect(resource) : entrylist
+  - collectEntryLists(resource) : entrylist
 
 resourceconverter: // Integration with framework
   - convert(object) : profile

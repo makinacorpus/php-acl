@@ -142,6 +142,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
 
         // Now we have a bootstrapped environnement, start testing things
         $start = microtime(true);
+        $memoryStart = memory_get_usage();
 
         $user1  = $user1Id;
         $user2  = $user2Id;
@@ -307,7 +308,8 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         }
 
         $stop = microtime(true);
-        echo "\nTook " . ceil(($stop - $start) * 1000) . " ms\n";
+        $memoryStop = memory_get_usage();
+        echo "\n" . get_class($this) . " " . ($doPreload ? '(P)' : '' ) . ': ' . ceil(($stop - $start) * 1000) . " ms / " . ($memoryStop - $memoryStart) . " bytes\n";
     }
 
     /**

@@ -19,7 +19,7 @@ class CallbackProfileCollector implements ProfileCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function collect(ProfileSetBuilder $builder)
+    public function collectProfiles(ProfileSetBuilder $builder)
     {
         call_user_func($this->callback, $builder);
     }

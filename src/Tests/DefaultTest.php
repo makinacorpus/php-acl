@@ -4,30 +4,23 @@ namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\MemoryEntryStore;
 use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
-use MakinaCorpus\ACL\Impl\Symfony\CollectEntryEvent;
-use MakinaCorpus\ACL\Impl\Symfony\CollectProfileEvent;
-use MakinaCorpus\ACL\Impl\Symfony\EventEntryCollector;
-use MakinaCorpus\ACL\Impl\Symfony\EventProfileCollector;
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
-
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use MakinaCorpus\ACL\Collector\CallbackProfileCollector;
+use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
+use MakinaCorpus\ACL\Collector\CallbackEntryCollector;
+use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 use MakinaCorpus\ACL\Impl\Symfony\ACLVoter;
+
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DefaultTest extends \PHPUnit_Framework_TestCase
 {
     const NON_EXISTING_PERMISSION = 'non_existing_permission';
 
-    private $dispatcher;
     private $manager;
-
-    final protected function getEventDispatcher()
-    {
-        return $this->dispatcher;
-    }
 
     protected function createPermissionMap()
     {
@@ -44,32 +37,9 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         return [];
     }
 
-    protected function createProfileCollectors()
-    {
-        return [new EventProfileCollector($this->getEventDispatcher())];
-    }
-
-    protected function createEntryCollectors()
-    {
-        return [new EventEntryCollector($this->getEventDispatcher())];
-    }
-
     protected function createBuilderFactory()
     {
         return NaiveEntryListBuilder::class;
-    }
-
-    protected function setUp()
-    {
-        $this->dispatcher = new EventDispatcher();
-        $this->manager = new Manager(
-            $this->createStorages(),
-            $this->createEntryCollectors(),
-            $this->createProfileCollectors(),
-            $this->createResourceConverters(),
-            $this->createPermissionMap(),
-            $this->createBuilderFactory()
-        );
     }
 
     protected function createResource($id)
@@ -103,70 +73,72 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         $ABRange  = [41, 60];
         $NoRange  = [61, 80];
 
-        // Bootstrap environement and test cases
-        $this->dispatcher->addListener(
-            CollectEntryEvent::EVENT_COLLECT,
-            function (CollectEntryEvent $event) use ($user1Id, $user2Id, $groupAId, $groupBId, $ARange, $BRange, $ABRange) {
+        $this->manager = new Manager(
+            $this->createStorages(),
+            [new CallbackEntryCollector(
+                function (EntryListBuilderInterface $builder) use ($user1Id, $user2Id, $groupAId, $groupBId, $ARange, $BRange, $ABRange) {
 
-                // We don't care about resource type here
-                $builder  = $event->getBuilder();
-                $resource = $builder->getResource();
-                $id       = $resource->getId();
+                    // We don't care about resource type here
+                    $resource = $builder->getResource();
+                    $id       = $resource->getId();
 
-                if ($id >= $ARange[0] && $id <= $ARange[1]) {
-                    $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
-                    $builder->add(Profile::USER, $user1Id, Permission::VIEW);
-                    $builder->add(Profile::USER, $user1Id, DefaultTest::NON_EXISTING_PERMISSION);
-                } else if ($id >= $BRange[0] && $id <= $BRange[1]) {
-                    $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
-                    $builder->add(Profile::USER, $user2Id, Permission::VIEW);
-                    $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
-                } else if ($id >= $ABRange[0] && $id <= $ABRange[1]) {
-                    $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
-                    $builder->add(Profile::USER, $user1Id, Permission::VIEW);
-                    $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
-                    $builder->add(Profile::USER, $user2Id, Permission::VIEW);
-                    $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
-                } else {
-                    // Those are nowhere
+                    if ($id >= $ARange[0] && $id <= $ARange[1]) {
+                        $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
+                        $builder->add(Profile::USER, $user1Id, Permission::VIEW);
+                        $builder->add(Profile::USER, $user1Id, DefaultTest::NON_EXISTING_PERMISSION);
+                    } else if ($id >= $BRange[0] && $id <= $BRange[1]) {
+                        $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
+                        $builder->add(Profile::USER, $user2Id, Permission::VIEW);
+                        $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
+                    } else if ($id >= $ABRange[0] && $id <= $ABRange[1]) {
+                        $builder->add(Profile::GROUP, $groupAId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
+                        $builder->add(Profile::USER, $user1Id, Permission::VIEW);
+                        $builder->add(Profile::GROUP, $groupBId, [Permission::VIEW, Permission::UPDATE, Permission::DELETE]);
+                        $builder->add(Profile::USER, $user2Id, Permission::VIEW);
+                        $builder->add(Profile::USER, $user2Id, DefaultTest::NON_EXISTING_PERMISSION);
+                    } else {
+                        // Those are nowhere
+                    }
                 }
-            })
-        ;
+            )],
+            [new CallbackProfileCollector(
+                function (ProfileSetBuilder $builder) use ($user1Id, $user2Id, $groupAId, $groupBId) {
 
-        $this->dispatcher->addListener(
-            CollectProfileEvent::EVENT_COLLECT,
-            function (CollectProfileEvent $event) use ($user1Id, $user2Id, $groupAId, $groupBId) {
-                $object = $event->getBuilder()->getObject();
+                    $object = $builder->getObject();
 
-                // For symfony testing
-                if ($object instanceof Token) {
-                    $object = $object->getOriginalObject();
+                    // For symfony testing
+                    if ($object instanceof Token) {
+                        $object = $object->getOriginalObject();
+                    }
+
+                    switch ($object) {
+                        case $user1Id:
+                            $builder->add(Profile::USER, $user1Id);
+                            break;
+                        case $user2Id:
+                            $builder->add(Profile::USER, $user2Id);
+                            break;
+                        case $groupAId:
+                            $builder->add(Profile::GROUP, $groupAId);
+                            break;
+                        case $groupBId:
+                            $builder->add(Profile::GROUP, $groupBId);
+                            break;
+                        case 'set1':
+                            $builder->add(Profile::USER, $user1Id);
+                            $builder->add(Profile::GROUP, $groupAId);
+                            break;
+                        case 'set2':
+                            $builder->add(Profile::USER, $user2Id);
+                            $builder->add(Profile::GROUP, $groupBId);
+                            break;
+                    }
                 }
-
-                switch ($object) {
-                    case $user1Id:
-                        $event->getBuilder()->add(Profile::USER, $user1Id);
-                        break;
-                    case $user2Id:
-                        $event->getBuilder()->add(Profile::USER, $user2Id);
-                        break;
-                    case $groupAId:
-                        $event->getBuilder()->add(Profile::GROUP, $groupAId);
-                        break;
-                    case $groupBId:
-                        $event->getBuilder()->add(Profile::GROUP, $groupBId);
-                        break;
-                    case 'set1':
-                        $event->getBuilder()->add(Profile::USER, $user1Id);
-                        $event->getBuilder()->add(Profile::GROUP, $groupAId);
-                        break;
-                    case 'set2':
-                        $event->getBuilder()->add(Profile::USER, $user2Id);
-                        $event->getBuilder()->add(Profile::GROUP, $groupBId);
-                        break;
-                }
-            })
-        ;
+            )],
+            $this->createResourceConverters(),
+            $this->createPermissionMap(),
+            $this->createBuilderFactory()
+        );
 
         // Now we have a bootstrapped environnement, start testing things
         $start = microtime(true);

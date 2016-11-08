@@ -2,9 +2,10 @@
 
 namespace MakinaCorpus\ACL\Impl;
 
-use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
+use MakinaCorpus\ACL\Collector\EntryListBuilderTrait;
 use MakinaCorpus\ACL\Identity;
+use MakinaCorpus\ACL\Resource;
 
 /**
  * Builds entry lists using the bitmask map

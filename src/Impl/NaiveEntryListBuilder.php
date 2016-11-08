@@ -2,8 +2,9 @@
 
 namespace MakinaCorpus\ACL\Impl;
 
-use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
+use MakinaCorpus\ACL\Collector\EntryListBuilderTrait;
+use MakinaCorpus\ACL\Profile;
 
 /**
  * Builds entry lists

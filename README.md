@@ -62,7 +62,7 @@ Voters are taken first, ACL later
 Voters VS ACL: who wins depends upon configuration (per type?)
 
 ACE are not dynamic, and may be cached (wipe out when resources change)
-  - this means, bloom or bitmask filters are usable
+  - this means bitmask filters are usable
 
 ACL are not dynamic, since they are composed of ACE
   - this means caching should happen here

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl;
+namespace MakinaCorpus\ACL\Collector;
 
 use MakinaCorpus\ACL\Resource;
 

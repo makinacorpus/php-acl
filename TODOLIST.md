@@ -7,3 +7,5 @@
  *  set bitmask/map as default for entry list;
  *  [x] implement default resource converter based on resource class map;
  *  [postponed] bulk check method on manager?
+ *  get rid of Identity::getStringRepresentation / Identity::fromString / IdentityTrait::repr
+ *  [ok] get rid of useless symfony events

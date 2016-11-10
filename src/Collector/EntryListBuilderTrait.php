@@ -106,6 +106,28 @@ trait EntryListBuilderTrait /* implements EntryListBuilderInterface */
     /**
      * {@inheritdoc}
      */
+    public function relocateProfile($oldProfileId, $newProfileId, $type = null)
+    {
+        if (!$type) {
+            $typeList = array_keys($this->entries);
+        } else if (!is_array($type)) {
+            $typeList = [$type];
+        }
+
+        $oldProfileId = (string)$oldProfileId;
+        $newProfileId = (string)$newProfileId;
+
+        foreach ($typeList as $altered) {
+            if (isset($this->entries[$altered][$oldProfileId])) {
+                $this->entries[$altered][$newProfileId] = $this->entries[$altered][$oldProfileId];
+                unset($this->entries[$altered][$oldProfileId]);
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function has($type, $id = null, $permission = null)
     {
         if (null === $id) {

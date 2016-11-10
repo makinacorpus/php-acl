@@ -75,6 +75,21 @@ interface EntryListBuilderInterface
     public function relocate($previousType, $previousId, $nextType, $nextId, $merge = true);
 
     /**
+     * Alter group identifiers of existing grants
+     *
+     * For the given realm(s) change the associated given gid to the new
+     * one instead, without changing anything else.
+     *
+     * @param int $oldProfileId
+     *   Profile identifier to look for
+     * @param int $newProfileId
+     *   Profile identifier to replace the old one with
+     * @param string|string[] $type
+     *   Profile types to work with, if none given, replace for all
+     */
+    public function relocateProfile($oldProfileId, $newProfileId, $type = null);
+
+    /**
      * Has permission for
      *
      * @param string $type

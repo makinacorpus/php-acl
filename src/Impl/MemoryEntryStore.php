@@ -19,7 +19,7 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($type)
+    public function supports($type, $permission)
     {
         return true;
     }

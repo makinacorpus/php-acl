@@ -5,9 +5,9 @@ namespace MakinaCorpus\ACL\Impl\Symfony;
 use MakinaCorpus\ACL\Manager;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
-class ACLVoter extends Voter
+class ACLVoter implements VoterInterface
 {
     private $manager;
 
@@ -22,18 +22,35 @@ class ACLVoter extends Voter
     }
 
     /**
-     * {@inhertdoc}
+     * {@inheritdoc}
      */
-    protected function supports($attribute, $subject)
+    public function vote(TokenInterface $token, $subject, array $attributes)
     {
-        return $this->manager->supportsPermission($attribute) && $this->manager->supportsResource($subject);
-    }
+        $vote = VoterInterface::ACCESS_ABSTAIN;
 
-    /**
-     * {@inhertidoc}
-     */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
-    {
-        return $this->manager->isGranted($subject, $token, $attribute);
+        foreach ($attributes as $attribute) {
+
+            if (!is_string($attribute)) {
+                continue;
+            }
+
+            $local = $this->manager->vote($subject, $token, $attribute);
+
+            if (Manager::ALLOW === $local) {
+                // ALLOW wins over DENY and ABSTAIN locally, I know it seems
+                // weird the user should drive itself the ALLOW, DENY order by
+                // configuration, but actually Symfony does this, so let's not
+                // surprise it and give it what it wants.
+                return VoterInterface::ACCESS_GRANTED;
+            }
+
+            if (Manager::DENY === $local) {
+                // DENY takes precedence over ABSTAIN and should not be
+                // overriden if the local value return ABSTAIN.
+                $vote = VoterInterface::ACCESS_DENIED;
+            }
+        }
+
+        return $vote;
     }
 }

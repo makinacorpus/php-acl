@@ -5,23 +5,27 @@ namespace MakinaCorpus\ACL\Collector;
 class CallbackEntryCollector implements EntryCollectorInterface
 {
     private $callback;
+    private $types = [];
+    private $permissions = [];
 
     /**
      * Default constructor
      *
      * @param callable $callback
      */
-    public function __construct(callable $callback)
+    public function __construct(callable $callback, array $types = [], array $permissions = [])
     {
         $this->callback = $callback;
+        $this->types = $types ? array_flip($types) : [];
+        $this->permissions = $permissions ? array_flip($permissions) : [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supports($type)
+    public function supports($type, $permission)
     {
-        return true;
+        return (!$this->types || isset($this->types[$type])) && (!$this->permissions || isset($this->permissions[$permission]));
     }
 
     /**

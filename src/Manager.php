@@ -7,9 +7,14 @@ use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
+use MakinaCorpus\ACL\Error\UnsupportedResourceException;
 
 final class Manager
 {
+    const ALLOW = 1;
+    const DENY = 2;
+    const ABSTAIN = 3;
+
     private $entryStores = [];
     private $resourceCollectors = [];
     private $profileCollectors = [];
@@ -66,7 +71,7 @@ final class Manager
      *
      * @return Resource
      */
-    private function expandResource($object)
+    private function createResource($object)
     {
         if ($object instanceof Resource) {
             return $object;
@@ -79,32 +84,43 @@ final class Manager
             }
         }
 
-        throw new \InvalidArgumentException("cannot convert object to resource");
+        throw new UnsupportedResourceException();
     }
 
     /**
      * Collect entry list for the given resource
      *
      * @param Resource $resource
+     *   The expanded and normalized resource object
      * @param mixed $object
+     *   The original object from the caller, propagated for performance reasons
+     * @param string $permission
+     *   The permission to check for, allowing early return using the supports()
+     *   method with stores and collectors for performance reasons
      *
      * @return EntryListInterface
      */
-    private function collectEntryListFor(Resource $resource, $object)
+    private function collectEntryListFor(Resource $resource, $object, $permission)
     {
         // Having an empty list of collects is valid, it just means that the
         // business layer deals with permissions by itself, using the store
         // directly, which is definitely legal
         if (empty($this->resourceCollectors)) {
-            return;
+            throw new UnsupportedResourceException();
         }
 
+        $isSupported = false;
         $builder = $this->permissionMap->createEntryListBuilder($resource, $object);
 
         foreach ($this->resourceCollectors as $collector) {
-            if ($collector->supports($resource->getType())) {
+            if ($collector->supports($resource->getType(), $permission)) {
+                $isSupported = true;
                 $collector->collectEntryLists($builder);
             }
+        }
+
+        if (!$isSupported) {
+            throw new UnsupportedResourceException();
         }
 
         return $builder->convertToEntryList();
@@ -114,16 +130,22 @@ final class Manager
      * Get entry list for
      *
      * @param Resource $resource
+     *   The expanded and normalized resource object
+     * @param mixed $object
+     *   The original object from the caller, propagated for performance reasons
+     * @param string $permission
+     *   The permission to check for, allowing early return using the supports()
+     *   method with stores and collectors for performance reasons
      *
      * @return EntryListInterface
      */
-    private function getEntryListFor(Resource $resource, $object)
+    private function loadEntryListFor(Resource $resource, $object, $permission)
     {
         $list = null;
         $store = null;
 
         foreach ($this->entryStores as $store) {
-            if ($store->supports($resource->getType())) {
+            if ($store->supports($resource->getType(), $permission)) {
                 if ($list = $store->load($resource)) {
                     break;
                 }
@@ -131,7 +153,7 @@ final class Manager
         }
 
         if (!$list) {
-            $list = $this->collectEntryListFor($resource, $object);
+            $list = $this->collectEntryListFor($resource, $object, $permission);
 
             // @todo should we call this at all?
             if ($list && !$list->isEmpty() && $store) {
@@ -210,10 +232,10 @@ final class Manager
         if ($object instanceof Resource) {
             $resource = $object;
         } else {
-            $resource = $this->expandResource($object);
+            $resource = $this->createResource($object);
         }
 
-        $list = $this->getEntryListFor($resource, $object);
+        $list = $this->loadEntryListFor($resource, $object, $permission);
 
         if (!$list || $list->isEmpty()) {
             return false;
@@ -233,12 +255,14 @@ final class Manager
      *
      * Data will get cached, making the permission checks a lot faster.
      *
-     * @param ResourceCollection $resource
+     * @param Resource $resource
+     *   The expanded and normalized resource object
      */
     private function doPreload(ResourceCollection $resources)
     {
+        return;
         foreach ($this->entryStores as $store) {
-            if ($store->supports($resources->getType())) {
+            if ($store->supports($resources->getType(), $permission)) {
                 $store->loadAll($resources);
             }
         }
@@ -312,35 +336,6 @@ final class Manager
     }
 
     /**
-     * Does this manager supports the given permission
-     *
-     * @param string $permission
-     */
-    public function supportsPermission($permission)
-    {
-        return $this->permissionMap->supports($permission);
-    }
-
-    /**
-     * Is the given object supported
-     *
-     * @param mixed $object
-     *
-     * @return boolean
-     */
-    public function supportsResource($object)
-    {
-        // @todo find a better way
-        try {
-            $this->expandResource($object);
-            return true;
-        } catch (\InvalidArgumentException $e) {
-            // Just leave this empty
-        }
-        return false;
-    }
-
-    /**
      * Preload data if necessary for resources
      *
      * Data will get cached, making the permission checks a lot faster.
@@ -354,6 +349,39 @@ final class Manager
     }
 
     /**
+     * Vote is the same as the isGranted operation except it can abstain
+     *
+     * @param mixed $resource
+     * @param mixed|Profile|ProfileSet $profile
+     * @param string $permission
+     *
+     * @return int
+     *   Manager::ALLOW, Manager::DENY or Manager::ABSTAIN
+     */
+    public function vote($resource, $profile, $permission)
+    {
+        if (!$this->permissionMap->supports($permission)) {
+            return self::ABSTAIN;
+        }
+
+        $profiles = $this->expandProfile($profile);
+
+        if (!$profiles) {
+            return self::ABSTAIN;
+        }
+
+        try {
+            if ($this->doCheck($resource, $profiles, $permission)) {
+                return self::ALLOW;
+            } else {
+                return self::DENY;
+            }
+        } catch (UnsupportedResourceException $e) {
+            return self::ABSTAIN;
+        }
+    }
+
+    /**
      * Is profile granted to
      *
      * @param mixed $resource
@@ -364,7 +392,7 @@ final class Manager
      */
     public function isGranted($resource, $profile, $permission)
     {
-        if (!$this->supportsPermission($permission)) {
+        if (!$this->permissionMap->supports($permission)) {
             return false;
         }
 
@@ -374,6 +402,10 @@ final class Manager
             return false;
         }
 
-        return $this->doCheck($resource, $profiles, $permission);
+        try {
+            return $this->doCheck($resource, $profiles, $permission);
+        } catch (UnsupportedResourceException $e) {
+            return false;
+        }
     }
 }

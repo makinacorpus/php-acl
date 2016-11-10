@@ -15,10 +15,11 @@ interface EntryStoreInterface
      * Does this object supports the given resource type
      *
      * @param string $type
+     * @param string $permission
      *
      * @return boolean
      */
-    public function supports($type);
+    public function supports($type, $permission);
 
     /**
      * Delete all entries for the given resource

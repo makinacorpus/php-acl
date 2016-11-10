@@ -72,6 +72,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
     private $type;
     private $viewPermission;
     private $tablesToJoin = [];
+    private $permissions = [];
 
     /**
      * Default constructor
@@ -92,13 +93,15 @@ class DrupalTableEntryStore implements EntryStoreInterface
         $table,
         $type = null,
         $viewPermission = Permission::VIEW,
-        array $tablesToJoin = []
+        array $tablesToJoin = [],
+        array $permissions = []
     ) {
         $this->database = $database;
         $this->table = $table;
         $this->type = $type;
         $this->viewPermission = $viewPermission;
         $this->tablesToJoin = [];
+        $this->permissions = $permissions ? array_flip($permissions) : [];
     }
 
     /**
@@ -140,9 +143,9 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($type)
+    public function supports($type, $permission)
     {
-        return $type === $this->type;
+        return $type === $this->type && (!$this->permissions || isset($this->permissions[$permission]));
     }
 
     /**

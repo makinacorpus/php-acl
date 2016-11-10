@@ -11,6 +11,7 @@ namespace MakinaCorpus\ACL;
 final class Permission
 {
     const COMMENT = 'comment';
+    const CREATE = 'create';
     const DELETE = 'delete';
     const HIDE = 'hide';
     const LOCK = 'lock';

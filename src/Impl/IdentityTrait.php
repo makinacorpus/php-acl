@@ -68,6 +68,13 @@ trait IdentityTrait
      */
     public function equals($object)
     {
-        return $object->type === $this->type && $object->id === $this->id;
+        if (is_numeric($this->id)) {
+            // Most frameworks out there actually won't cast integers coming
+            // from their database as int and keep them as strings, we must
+            // prevent any false negative due to poorly coded frameworks.
+            return $object->type === $this->type && $object->id == $this->id;
+        } else {
+            return $object->type === $this->type && $object->id === $this->id;
+        }
     }
 }

@@ -25,16 +25,17 @@ class PermissionMap
             // Provide sensible defaults
             $map = [
                 Permission::COMMENT => 1,
-                Permission::DELETE => 2,
-                Permission::HIDE => 4,
-                Permission::LOCK => 8,
-                Permission::MOVE => 16,
-                Permission::SHARE => 32,
-                Permission::SHOW => 64,
-                Permission::TOUCH => 128,
-                Permission::UNLOCK => 256,
-                Permission::UPDATE => 512,
-                Permission::VIEW => 1024,
+                Permission::CREATE => 2,
+                Permission::DELETE => 4,
+                Permission::HIDE => 8,
+                Permission::LOCK => 16,
+                Permission::MOVE => 32,
+                Permission::SHARE => 64,
+                Permission::SHOW => 128,
+                Permission::TOUCH => 256,
+                Permission::UNLOCK => 512,
+                Permission::UPDATE => 1024,
+                Permission::VIEW => 2048,
             ];
         }
 

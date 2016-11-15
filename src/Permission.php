@@ -10,6 +10,7 @@ namespace MakinaCorpus\ACL;
  */
 final class Permission
 {
+    const CLONE = 'clone';
     const COMMENT = 'comment';
     const CREATE = 'create';
     const DELETE = 'delete';
@@ -17,6 +18,7 @@ final class Permission
     const LOCK = 'lock';
     const MOVE = 'move';
     const OVERVIEW = 'overview';
+    const PUBLISH = 'publish';
     const SHARE = 'share';
     const SHOW = 'show';
     const TOUCH = 'touch';

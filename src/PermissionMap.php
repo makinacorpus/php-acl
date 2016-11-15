@@ -24,23 +24,41 @@ class PermissionMap
         if (!$map) {
             // Provide sensible defaults
             $map = [
-                Permission::COMMENT => 1,
-                Permission::CREATE => 2,
-                Permission::DELETE => 4,
-                Permission::HIDE => 8,
-                Permission::LOCK => 16,
-                Permission::MOVE => 32,
-                Permission::OVERVIEW => 4096,
-                Permission::SHARE => 64,
-                Permission::SHOW => 128,
-                Permission::TOUCH => 256,
-                Permission::UNLOCK => 512,
-                Permission::UPDATE => 1024,
-                Permission::VIEW => 2048,
+                Permission::CLONE => 1,
+                Permission::COMMENT => 2,
+                Permission::CREATE => 4,
+                Permission::DELETE => 8,
+                Permission::HIDE => 16,
+                Permission::LOCK => 32,
+                Permission::MOVE => 64,
+                Permission::OVERVIEW => 128,
+                Permission::PUBLISH => 256,
+                Permission::SHARE => 512,
+                Permission::SHOW => 1024,
+                Permission::TOUCH => 2048,
+                Permission::UNLOCK => 4096,
+                Permission::UPDATE => 8192,
+                Permission::VIEW => 16384,
             ];
         }
 
         $this->map = $map;
+    }
+
+    public function addPermissions(array $permissions)
+    {
+        foreach ($permissions as $string => $mask) {
+            if (isset($this->map[$string]) || in_array($mask, $this->map)) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        "permission %s with mask %d overrides an existing permission",
+                        $string, $mask
+                    )
+                );
+            }
+
+            $this->map[$string] = $mask;
+        }
     }
 
     /**

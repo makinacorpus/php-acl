@@ -30,6 +30,7 @@ class PermissionMap
                 Permission::HIDE => 8,
                 Permission::LOCK => 16,
                 Permission::MOVE => 32,
+                Permission::OVERVIEW => 4096,
                 Permission::SHARE => 64,
                 Permission::SHOW => 128,
                 Permission::TOUCH => 256,

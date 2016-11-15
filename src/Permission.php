@@ -16,6 +16,7 @@ final class Permission
     const HIDE = 'hide';
     const LOCK = 'lock';
     const MOVE = 'move';
+    const OVERVIEW = 'overview';
     const SHARE = 'share';
     const SHOW = 'show';
     const TOUCH = 'touch';

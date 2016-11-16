@@ -357,15 +357,19 @@ final class Manager
     /**
      * Vote is the same as the isGranted operation except it can abstain
      *
-     * @param mixed $resource
      * @param mixed|Profile|ProfileSet $profile
+     * @param mixed $resource
      * @param string $permission
      *
      * @return int
      *   Manager::ALLOW, Manager::DENY or Manager::ABSTAIN
      */
-    public function vote($resource, $profile, $permission)
+    public function vote($profile, $resource, $permission)
     {
+        if (!$profile) {
+            throw new \Exception("Passing a null profile is unsupported yet");
+        }
+
         if (!$this->permissionMap->supports($permission)) {
             return self::ABSTAIN;
         }
@@ -390,14 +394,18 @@ final class Manager
     /**
      * Is profile granted to
      *
+     * @param string $permission
      * @param mixed $resource
      * @param mixed|Profile|ProfileSet $profile
-     * @param string $permission
      *
      * @return boolean
      */
-    public function isGranted($resource, $profile, $permission)
+    public function isGranted($permission, $resource, $profile = null)
     {
+        if (!$profile) {
+            throw new \Exception("Passing a null profile is unsupported yet");
+        }
+
         if (!$this->permissionMap->supports($permission)) {
             return false;
         }

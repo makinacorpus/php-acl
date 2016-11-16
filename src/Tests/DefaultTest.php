@@ -166,38 +166,38 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
             for ($id = $ARange[0]; $id <= $ARange[1]; ++$id) {
                 $resource = $this->createResource($id);
                 // Profiles
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $user1,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user2));
                 // Profile sets
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $set2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $set2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $set2));
                 // Non supported permissions should always return false, no matter what
-                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set2));
                 // Assert the DENY, ALLOW, ABSTAIN from the vote() method
-                $this->assertSame(Manager::ALLOW, $this->manager->vote($resource, $groupA, Permission::VIEW));
-                $this->assertSame(Manager::DENY, $this->manager->vote($resource, $user1, Permission::UPDATE));
-                $this->assertSame(Manager::ABSTAIN, $this->manager->vote($resource, $groupA, self::NON_EXISTING_PERMISSION));
-                $this->assertSame(Manager::ABSTAIN, $this->manager->vote('stupid_unsupported_resource', $groupA, self::NON_EXISTING_PERMISSION));
-                $this->assertSame(Manager::ABSTAIN, $this->manager->vote('stupid_unsupported_resource', $groupA, Permission::VIEW));
+                $this->assertSame(Manager::ALLOW, $this->manager->vote($groupA, $resource, Permission::VIEW));
+                $this->assertSame(Manager::DENY, $this->manager->vote($user1, $resource, Permission::UPDATE));
+                $this->assertSame(Manager::ABSTAIN, $this->manager->vote($groupA, $resource, self::NON_EXISTING_PERMISSION));
+                $this->assertSame(Manager::ABSTAIN, $this->manager->vote($groupA, 'stupid_unsupported_resource', self::NON_EXISTING_PERMISSION));
+                $this->assertSame(Manager::ABSTAIN, $this->manager->vote($groupA, 'stupid_unsupported_resource', Permission::VIEW));
                 // Assert that symfony voter supports it, there is no use in
                 // asserting that thousands of time, let's just do it here.
                 $this->assertSame(Voter::ACCESS_GRANTED, $symfonyVoter->vote(new Token($groupA), $resource, [Permission::VIEW]));
@@ -228,90 +228,90 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
             }
             for ($id = $BRange[0]; $id <= $BRange[1]; ++$id) {
                 $resource = $this->createResource($id);
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $user2,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user1));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user2));
                 // Profile sets
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $set2));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $set2));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $set2));
                 // Non supported permissions should always return false, no matter what
-                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set2));
             }
             for ($id = $ABRange[0]; $id <= $ABRange[1]; ++$id) {
                 $resource = $this->createResource($id);
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupA, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $user1,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $groupB, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $user2,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $groupA));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user1));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $groupB));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user2));
                 // Profile sets
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $set1, Permission::DELETE));
-                $this->assertTrue($this->manager->isGranted($resource, $set2,  Permission::VIEW));
-                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::UPDATE));
-                $this->assertTrue($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $set1));
+                $this->assertTrue($this->manager->isGranted(Permission::VIEW, $resource, $set2));
+                $this->assertTrue($this->manager->isGranted(Permission::UPDATE, $resource, $set2));
+                $this->assertTrue($this->manager->isGranted(Permission::DELETE, $resource, $set2));
                 // Non supported permissions should always return false, no matter what
-                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set2));
             }
             for ($id = $NoRange[0]; $id <= $NoRange[1]; ++$id) {
                 $resource = $this->createResource($id);
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupA, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,  Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,  Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $user2));
                 // Profile sets
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $set1, Permission::DELETE));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,  Permission::VIEW));
-                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::UPDATE));
-                $this->assertFalse($this->manager->isGranted($resource, $set2, Permission::DELETE));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(Permission::VIEW, $resource, $set2));
+                $this->assertFalse($this->manager->isGranted(Permission::UPDATE, $resource, $set2));
+                $this->assertFalse($this->manager->isGranted(Permission::DELETE, $resource, $set2));
                 // Non supported permissions should always return false, no matter what
-                $this->assertFalse($this->manager->isGranted($resource, $groupA,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user1,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $groupB,  self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $user2,   self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set1,    self::NON_EXISTING_PERMISSION));
-                $this->assertFalse($this->manager->isGranted($resource, $set2,    self::NON_EXISTING_PERMISSION));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupA));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $groupB));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $user2));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set1));
+                $this->assertFalse($this->manager->isGranted(self::NON_EXISTING_PERMISSION, $resource, $set2));
             }
         }
 

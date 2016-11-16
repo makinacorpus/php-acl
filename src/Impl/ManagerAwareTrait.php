@@ -30,8 +30,8 @@ trait ManagerAwareTrait /* implements ManagerAwareInterface */
      *
      * @return boolean
      */
-    protected function isGranted($resource, $profile, $permission)
+    protected function isGranted($permission, $resource, $profile)
     {
-        return $this->aclManager->isGranted($resource, $profile, $permission);
+        return $this->aclManager->isGranted($permission, $resource, $profile);
     }
 }

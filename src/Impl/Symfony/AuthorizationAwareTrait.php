@@ -2,7 +2,6 @@
 
 namespace MakinaCorpus\ACL\Impl\Symfony;
 
-use MakinaCorpus\ACL\Manager;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
@@ -25,13 +24,13 @@ trait AuthorizationAwareTrait /* implements AuthorizationAwareInterface */
     /**
      * Alias for Manager::isGranted()
      *
+     * @param string|string[] $attributes
      * @param mixed $object
      * @param mixed $profile
-     * @param string|string[] $attributes
      *
      * @return boolean
      */
-    protected function isGranted($object, $profile, $attributes)
+    protected function isGranted($attributes, $object = null, $profile = null)
     {
         // When using the base Symfony implementation, profile will be ignored
         return $this->authorizationChecker->isGranted($attributes, $object, $profile);

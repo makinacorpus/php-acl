@@ -34,7 +34,7 @@ class ACLVoter implements VoterInterface
                 continue;
             }
 
-            $local = $this->manager->vote($subject, $token, $attribute);
+            $local = $this->manager->vote($token, $subject, $attribute);
 
             if (Manager::ALLOW === $local) {
                 // ALLOW wins over DENY and ABSTAIN locally, I know it seems

@@ -29,7 +29,7 @@ class EntryToNodeAccessConverter
      * @param string $deletePermission
      *   Permission string to use for Drupal "delete" grant
      */
-    private function __construct(
+    public function __construct(
         $viewPermission = Permission::VIEW,
         $updatePermission = Permission::UPDATE,
         $deletePermission = Permission::DELETE

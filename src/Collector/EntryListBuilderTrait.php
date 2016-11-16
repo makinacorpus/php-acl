@@ -112,6 +112,8 @@ trait EntryListBuilderTrait /* implements EntryListBuilderInterface */
             $typeList = array_keys($this->entries);
         } else if (!is_array($type)) {
             $typeList = [$type];
+        } else {
+            $typeList = $type;
         }
 
         $oldProfileId = (string)$oldProfileId;

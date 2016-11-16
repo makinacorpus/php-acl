@@ -27,6 +27,14 @@ class MemoryEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
+    public function supportsType($type)
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function delete(Resource $resource)
     {
         unset($this->entries[$resource->getType()][(string)$resource->getId()]);

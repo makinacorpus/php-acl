@@ -151,6 +151,14 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
+    public function supportsType($type)
+    {
+        return $type === $this->type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function delete(Resource $resource)
     {
         if (!$this->supports($resource->getType())) {

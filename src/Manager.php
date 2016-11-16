@@ -6,8 +6,8 @@ use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
-use MakinaCorpus\ACL\Store\EntryStoreInterface;
 use MakinaCorpus\ACL\Error\UnsupportedResourceException;
+use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 final class Manager
 {
@@ -100,7 +100,7 @@ final class Manager
      *
      * @return EntryListInterface
      */
-    private function collectEntryListFor(Resource $resource, $object, $permission)
+    private function collectEntryListFor(Resource $resource, $object, $permission = null)
     {
         // Having an empty list of collects is valid, it just means that the
         // business layer deals with permissions by itself, using the store
@@ -113,7 +113,15 @@ final class Manager
         $builder = $this->permissionMap->createEntryListBuilder($resource, $object);
 
         foreach ($this->resourceCollectors as $collector) {
-            if ($collector->supports($resource->getType(), $permission)) {
+            $localSupport = false;
+
+            if (null === $permission) {
+                $localSupport = $collector->supportsType($resource->getType());
+            } else {
+                $localSupport = $collector->supports($resource->getType(), $permission);
+            }
+
+            if ($localSupport) {
                 $isSupported = true;
                 $collector->collectEntryLists($builder);
             }
@@ -139,13 +147,21 @@ final class Manager
      *
      * @return EntryListInterface
      */
-    private function loadEntryListFor(Resource $resource, $object, $permission)
+    private function loadEntryListFor(Resource $resource, $object, $permission = null)
     {
         $list = null;
         $store = null;
 
         foreach ($this->entryStores as $store) {
-            if ($store->supports($resource->getType(), $permission)) {
+            $localSupport = false;
+
+            if (null === $permission) {
+                $localSupport = $store->supportsType($resource->getType());
+            } else {
+                $localSupport = $store->supports($resource->getType(), $permission);
+            }
+
+            if ($localSupport) {
                 if ($list = $store->load($resource)) {
                     break;
                 }
@@ -156,7 +172,7 @@ final class Manager
             $list = $this->collectEntryListFor($resource, $object, $permission);
 
             // @todo should we call this at all?
-            if ($list && !$list->isEmpty() && $store) {
+            if (!$list->isEmpty() && $store) {
                 $store->save($resource, $list);
             }
         }
@@ -257,12 +273,13 @@ final class Manager
      *
      * @param Resource $resource
      *   The expanded and normalized resource object
+     * @param string $permission
+     *   Permission for the supports() method
      */
     private function doPreload(ResourceCollection $resources)
     {
-        return;
         foreach ($this->entryStores as $store) {
-            if ($store->supports($resources->getType(), $permission)) {
+            if ($store->supportsType($resources->getType())) {
                 $store->loadAll($resources);
             }
         }
@@ -300,7 +317,7 @@ final class Manager
     public function collectEntryListAll($object)
     {
         try {
-            $resource = $this->expandResource($object);
+            $resource = $this->createResource($object);
         } catch (\InvalidArgumentException $e) {
             if ($this->debug) {
                 // @todo let exception or trigger meaningful debug message
@@ -309,18 +326,7 @@ final class Manager
             return [];
         }
 
-        $ret = [];
-        $type = $resource->getType();
-
-        foreach ($this->entryStores as $store) {
-            if ($store->supports($type)) {
-                if ($list = $this->getEntryListFor($resource)) {
-                    $ret[] = $list;
-                }
-            }
-        }
-
-        return $ret;
+        return $this->loadEntryListFor($resource, $object);
     }
 
     /**

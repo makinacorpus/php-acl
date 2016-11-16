@@ -31,6 +31,14 @@ class CallbackEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
+    public function supportsType($type)
+    {
+        return (!$this->types || isset($this->types[$type]));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function collectEntryLists(EntryListBuilderInterface $builder)
     {
         call_user_func($this->callback, $builder);

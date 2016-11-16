@@ -23,6 +23,15 @@ interface EntryCollectorInterface
     public function supports($type, $permission);
 
     /**
+     * Does this object supports the given resource type
+     *
+     * @param string $type
+     *
+     * @return boolean
+     */
+    public function supportsType($type);
+
+    /**
      * Collect entries for resource
      *
      * @param EntryListBuilderInterface $entries

@@ -51,8 +51,10 @@ class PermissionMap
             if (isset($this->map[$string]) || in_array($mask, $this->map)) {
                 throw new \InvalidArgumentException(
                     sprintf(
-                        "permission %s with mask %d overrides an existing permission",
-                        $string, $mask
+                        "permission '%s' with mask %d overrides the existing permission '%s'",
+                        $string,
+                        $mask,
+                        array_search($mask, $this->map)
                     )
                 );
             }

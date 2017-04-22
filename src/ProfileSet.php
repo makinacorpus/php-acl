@@ -116,27 +116,6 @@ final class ProfileSet
     }
 
     /**
-     * Get all user profiles
-     *
-     * Do not call this at runtime, it will instanciate the Profile
-     * instances
-     *
-     * @return Profile[]
-     */
-    public function getAll()
-    {
-        $ret = [];
-
-        foreach ($this->index as $type => $ids) {
-            foreach ($ids as $id) {
-                $ret = new Profile($type, $id);
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
      * Get current profile as array
      *
      * @return string[][]

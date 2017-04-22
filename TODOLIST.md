@@ -2,7 +2,7 @@
 
  *  [_] set bitmask/map as default for entry list;
  *  [pending] implement bulk methods on store, with cache around;
- *  [postponed] bulk check method on manager?
+ *  [_] bulk check method on manager?
  *  [x] get rid of IdentityTrait::repr
  *  [x] get rid of the Profile class at runtime
  *  [x] get rid of useless symfony events

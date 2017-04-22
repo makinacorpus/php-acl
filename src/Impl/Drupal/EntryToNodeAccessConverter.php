@@ -77,8 +77,10 @@ class EntryToNodeAccessConverter
     {
         $ret = [];
 
-        foreach ($profileSet->getAll() as $profile) {
-            $ret[$profile->getType()][] = $profile->getId();
+        foreach ($profileSet->toArray() as $type => $ids) {
+            foreach ($ids as $id) {
+                $ret[$type][] = $id;
+            }
         }
 
         return $ret;

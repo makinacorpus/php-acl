@@ -2,7 +2,6 @@
 
 namespace MakinaCorpus\ACL\Collector;
 
-use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\ProfileSet;
 
 /**

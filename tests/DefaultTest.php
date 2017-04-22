@@ -3,7 +3,6 @@
 namespace MakinaCorpus\ACL\Tests;
 
 use MakinaCorpus\ACL\Impl\MemoryEntryStore;
-use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;

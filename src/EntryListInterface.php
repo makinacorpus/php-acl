@@ -12,11 +12,12 @@ interface EntryListInterface
     /**
      * Has the given permission
      *
+     * @param ProfileSet $profiles
      * @param string $permission
      *
      * @return boolean
      */
-    public function hasPermissionFor(Profile $profile, $permission);
+    public function hasPermissionFor(ProfileSet $profiles, $permission);
 
     /**
      * Is this instance empty

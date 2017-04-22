@@ -4,7 +4,6 @@ namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
 use MakinaCorpus\ACL\Collector\EntryListBuilderTrait;
-use MakinaCorpus\ACL\Profile;
 
 /**
  * Builds entry lists
@@ -25,8 +24,7 @@ final class NaiveEntryListBuilder implements EntryListBuilderInterface
             foreach ($list as $id => $permissions) {
                 // Here the original profile object is unnecessary, since it is
                 // only meant to deal with ACL storage in the end
-                $profile = new Profile($type, $id);
-                $entries[] = new NaiveEntry($profile, array_keys($permissions));
+                $entries[] = new NaiveEntry($type, $id, array_keys($permissions));
             }
         }
 

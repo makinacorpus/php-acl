@@ -3,7 +3,7 @@
 namespace MakinaCorpus\ACL\Impl;
 
 use MakinaCorpus\ACL\EntryListInterface;
-use MakinaCorpus\ACL\Profile;
+use MakinaCorpus\ACL\ProfileSet;
 
 /**
  * Represent a full ACL for a single resource
@@ -25,12 +25,14 @@ final class NaiveEntryList implements EntryListInterface
     /**
      * {@inheritdoc}
      */
-    public function hasPermissionFor(Profile $profile, $permission)
+    public function hasPermissionFor(ProfileSet $profiles, $permission)
     {
-        foreach ($this->entries as $entry) {
-            if ($entry->getProfile()->equals($profile)) {
-                if ($entry->hasPermission($permission)) {
-                    return true;
+        foreach ($profiles->toArray() as $type => $ids) {
+            foreach ($ids as $id) {
+                foreach ($this->entries as $entry) {
+                    if ($entry->isFor($type, $id) && $entry->hasPermission($permission)) {
+                        return true;
+                    }
                 }
             }
         }

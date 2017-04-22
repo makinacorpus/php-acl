@@ -39,15 +39,7 @@ final class ProfileSetBuilder
      */
     public function convertToProfileSet()
     {
-        $profiles = [];
-
-        foreach ($this->entries as $type => $list) {
-            foreach ($list as $id) {
-                $profiles[] = new Profile($type, $id);
-            }
-        }
-
-        return new ProfileSet($profiles);
+        return ProfileSet::createFromArray($this->entries);
     }
 
     /**
@@ -55,7 +47,7 @@ final class ProfileSetBuilder
      *
      * @param string $type
      *   Profile type
-     * @param int|string|int[]|string[] $id
+     * @param string|string[] $id
      *   Profile identifier
      */
     public function add($type, $id)
@@ -75,7 +67,7 @@ final class ProfileSetBuilder
      *
      * @param string $type
      *   Profile type
-     * @param int|string $id
+     * @param string $id
      *   Profile identifier
      * @param string $permission
      *   Single permission
@@ -96,7 +88,7 @@ final class ProfileSetBuilder
      *
      * @param string $type
      *   Profile type
-     * @param int|string|int[]|string[] $id
+     * @param string|string[] $id
      *   Profile identifier, if null is given remove all permissions for
      *   the given profile type
      *

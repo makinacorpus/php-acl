@@ -32,7 +32,7 @@ final class DynamicResourceConverter implements ResourceConverterInterface
      *
      * @param mixed $object
      *
-     * @return int|string
+     * @return string
      */
     private function findId($object)
     {

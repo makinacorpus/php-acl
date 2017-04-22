@@ -193,7 +193,7 @@ final class Manager
         // business layer deals with permissions by itself, using the store
         // directly, which is definitely legal
         if (empty($this->profileCollectors)) {
-            return new ProfileSet([], $object);
+            return ProfileSet::createFromArray([]);
         }
 
         $builder = new ProfileSetBuilder($object);
@@ -218,7 +218,7 @@ final class Manager
             return $object;
         }
         if ($object instanceof Profile) {
-            return new ProfileSet([$object]);
+            return ProfileSet::createFromProfiles([$object]);
         }
 
         $id = Identity::computeUniqueIdentifier($object);
@@ -257,10 +257,8 @@ final class Manager
             return false;
         }
 
-        foreach ($profiles->getAll() as $profile) {
-            if ($list->hasPermissionFor($profile, $permission)) {
-                return true;
-            }
+        if ($list->hasPermissionFor($profiles, $permission)) {
+            return true;
         }
 
         return false;

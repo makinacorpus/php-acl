@@ -37,11 +37,6 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         return [];
     }
 
-    protected function createBuilderFactory()
-    {
-        return NaiveEntryListBuilder::class;
-    }
-
     protected function createResource($id)
     {
         return new Resource('content', $id);
@@ -138,8 +133,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
                 }
             )],
             $this->createResourceConverters(),
-            $this->createPermissionMap(),
-            $this->createBuilderFactory()
+            $this->createPermissionMap()
         );
 
         // Now we have a bootstrapped environnement, start testing things

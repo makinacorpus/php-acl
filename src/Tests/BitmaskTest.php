@@ -7,11 +7,6 @@ use MakinaCorpus\ACL\Impl\BitmaskMap;
 
 class BitmaskTest extends DefaultTest
 {
-    protected function createBuilderFactory()
-    {
-        return BitmaskEntryListBuilder::class;
-    }
-
     protected function createPermissionMap()
     {
         return new BitmaskMap();

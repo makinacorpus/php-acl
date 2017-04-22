@@ -9,19 +9,38 @@ use MakinaCorpus\ACL\Profile;
  */
 final class NaiveEntry
 {
-    private $profile;
+    private $type;
+    private $id;
     private $permissions = [];
 
     /**
      * Default constructor
      *
-     * @param Profile $profile
+     * @param string $type
+     *   Profile type
+     * @param string $id
+     *   Profile identifier
      * @param string[] $permissions
+     *   Permissions
      */
-    public function __construct(Profile $profile, array $permissions)
+    public function __construct($type, $id, array $permissions)
     {
-        $this->profile = $profile;
+        $this->type = $type;
+        $this->id = $id;
         $this->permissions = $permissions;
+    }
+
+    /**
+     * Does this entry is for the given profile
+     *
+     * @param string $type
+     * @param string $id
+     *
+     * @return bool
+     */
+    public function isFor($type, $id)
+    {
+        return $this->type === $type && $this->id === $id;
     }
 
     /**
@@ -31,7 +50,7 @@ final class NaiveEntry
      */
     public function getProfile()
     {
-        return $this->profile;
+        return new Profile($this->type, $this->id);
     }
 
     /**
@@ -39,7 +58,7 @@ final class NaiveEntry
      *
      * @param string $permission
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPermission($permission)
     {
@@ -59,7 +78,7 @@ final class NaiveEntry
     /**
      * Is this instance empty
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty()
     {

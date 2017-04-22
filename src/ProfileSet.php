@@ -25,27 +25,49 @@ namespace MakinaCorpus\ACL;
 final class ProfileSet
 {
     /**
-     * @var Profile[]
+     * Create profile from profile instance list
+     *
+     * @param Profile[] $profiles
+     *
+     * @return ProfileSet
      */
-    private $profiles = [];
-    private $index = [];
+    public static function createFromProfiles(array $profiles) : ProfileSet
+    {
+        $instance = new self();
+        foreach ($profiles as $profile) {
+            $instance->index[$profile->getType()] = (string)$profile->getId();
+        }
+
+        $instance->cacheId = $instance->computeCacheIdentifier();
+
+        return $instance;
+    }
+
+    /**
+     * Create profile from profile instance list
+     *
+     * @param string[][]
+     *
+     * @return ProfileSet
+     */
+    public static function createFromArray(array $array) : ProfileSet
+    {
+        $instance = new self();
+        $instance->index = $array;
+        $instance->cacheId = $instance->computeCacheIdentifier();
+
+        return $instance;
+    }
+
+    /**
+     * @var string
+     */
     private $cacheId;
 
     /**
-     * Default constructor
-     *
-     * @param Profile[] $profiles
-     *   List of profiles the user has
+     * @var string[][]
      */
-    public function __construct(array $profiles)
-    {
-        foreach ($profiles as $profile) {
-            $this->profiles[] = $profile;
-            $this->index[$profile->getType()][(string)$profile->getId()] = true;
-        }
-
-        $this->cacheId = $this->computeCacheIdentifier();
-    }
+    private $index = [];
 
     /**
      * Compute a unique identifier for this profile set
@@ -58,11 +80,8 @@ final class ProfileSet
     {
         $ret = [];
 
-        foreach ($this->profiles as $profile) {
-            $ret[$profile->getType()][] = $profile->getId();
-        }
-        foreach ($ret as $type => $idList) {
-            $ret[$type] = $type . ':' . implode(',', $idList);
+        foreach ($this->index as $type => $ids) {
+            $ret[$type] = $type . ':' . implode(',', $ids);
         }
 
         return implode(';', $ret);
@@ -84,23 +103,49 @@ final class ProfileSet
      * Does the have the given profile
      *
      * @param string $type
-     * @param int|string $id
+     * @param string $id
      *
      * @return boolean
      */
     public function is($type, $id)
     {
-        return isset($this->index[$type][(string)$id]);
+        if (isset($this->index[$type])) {
+            return in_array($id, $this->index[$type]);
+        }
+        return false;
     }
 
     /**
      * Get all user profiles
      *
+     * Do not call this at runtime, it will instanciate the Profile
+     * instances
+     *
      * @return Profile[]
      */
     public function getAll()
     {
-        return $this->profiles;
+        $ret = [];
+
+        foreach ($this->index as $type => $ids) {
+            foreach ($ids as $id) {
+                $ret = new Profile($type, $id);
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get current profile as array
+     *
+     * @return string[][]
+     *   Keys are profile types, values are arrays whose keys are profile
+     *   identifiers, values are identifier arrays
+     */
+    public function toArray()
+    {
+        return $this->index;
     }
 
     /**
@@ -110,6 +155,6 @@ final class ProfileSet
      */
     public function isEmpty()
     {
-        return empty($this->profiles);
+        return empty($this->index);
     }
 }

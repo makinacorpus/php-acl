@@ -5,7 +5,6 @@ namespace MakinaCorpus\ACL\Impl\Drupal;
 use MakinaCorpus\ACL\EntryListInterface;
 use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Permission;
-use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;

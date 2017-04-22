@@ -37,7 +37,7 @@ interface EntryListBuilderInterface
      *
      * @param string $type
      *   Profile type
-     * @param int|string $id
+     * @param string $id
      *   Profile identifier
      * @param string|string[] $permission
      *   Single permission or permission array
@@ -62,11 +62,11 @@ interface EntryListBuilderInterface
      *
      * @param string $previousType
      *   Profile type to remove
-     * @param int|string $previousId
+     * @param string $previousId
      *   Profile identifier to remove
      * @param string $nextType
      *   Profile type that inherits from
-     * @param int|string $nextId
+     * @param string $nextId
      *   Profile identifier that inherits from
      * @param boolean $merge
      *   If target already exists, and this is set to false, existing
@@ -94,7 +94,7 @@ interface EntryListBuilderInterface
      *
      * @param string $type
      *   Profile type
-     * @param int|string $id
+     * @param string $id
      *   Profile identifier
      * @param string $permission
      *   Single permission
@@ -108,7 +108,7 @@ interface EntryListBuilderInterface
      *
      * @param string $type
      *   Profile type
-     * @param int|string $id
+     * @param string $id
      *   Profile identifier, if null is given remove all permissions for
      *   the given profile type
      * @param string $permission

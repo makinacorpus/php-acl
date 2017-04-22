@@ -12,7 +12,7 @@
 
     <testsuites>
         <testsuite name="ACL test suite">
-            <directory>./src/Tests/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 

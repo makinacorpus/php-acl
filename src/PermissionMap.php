@@ -2,9 +2,8 @@
 
 namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Permission;
-use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
+use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
 
 /**
  * Map of supported permissions

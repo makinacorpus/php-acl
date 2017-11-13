@@ -2,7 +2,6 @@
 
 namespace MakinaCorpus\ACL\Impl;
 
-use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\PermissionMap;
 use MakinaCorpus\ACL\Resource;
 

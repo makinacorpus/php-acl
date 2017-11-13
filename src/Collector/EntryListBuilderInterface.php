@@ -2,9 +2,6 @@
 
 namespace MakinaCorpus\ACL\Collector;
 
-use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\EntryListInterface;
-
 /**
  * Builds entry lists
  */
@@ -13,7 +10,7 @@ interface EntryListBuilderInterface
     /**
      * Get resource
      *
-     * @return Resource
+     * @return \MakinaCorpus\ACL\Resource
      */
     public function getResource();
 
@@ -27,7 +24,7 @@ interface EntryListBuilderInterface
     /**
      * Convert this object as entry list
      *
-     * @return EntryListInterface
+     * @return \MakinaCorpus\ACL\EntryListInterface
      */
     public function convertToEntryList();
 

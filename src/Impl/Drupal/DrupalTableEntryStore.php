@@ -126,8 +126,6 @@ class DrupalTableEntryStore implements EntryStoreInterface
 
     /**
      * Alter Drupal query using the configured table
-     *
-     * @throws \Exception
      */
     public function alterQuery()
     {

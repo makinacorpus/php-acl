@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Tests;
+namespace MakinaCorpus\ACL\Tests\Functionnal;
 
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;

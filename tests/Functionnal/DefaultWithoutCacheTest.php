@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Tests;
+namespace MakinaCorpus\ACL\Tests\Functionnal;
 
 class DefautWithoutCacheTest extends DefaultTest
 {

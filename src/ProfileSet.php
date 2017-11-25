@@ -35,7 +35,7 @@ final class ProfileSet
     {
         $instance = new self();
         foreach ($profiles as $profile) {
-            $instance->index[$profile->getType()] = (string)$profile->getId();
+            $instance->index[$profile->getType()][] = (string)$profile->getId();
         }
 
         return $instance;

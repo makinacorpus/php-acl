@@ -1,15 +1,14 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony\DependencyInjection;
+namespace MakinaCorpus\ACL\Bridge\Symfony\DependencyInjection;
 
 use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
-
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /**
  * Registers all dynamic ACL voter dependencies, unregister it if there's not.

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony;
+namespace MakinaCorpus\ACL\Bridge\Symfony;
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 

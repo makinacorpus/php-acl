@@ -1,12 +1,7 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl;
+namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Manager;
-
-/**
- * Basic and functionnal implementation for ManagerAwareInterface
- */
 trait ManagerAwareTrait /* implements ManagerAwareInterface */
 {
     private $aclManager;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony\DependencyInjection;
+namespace MakinaCorpus\ACL\Bridge\Symfony\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;

@@ -1,9 +1,8 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony;
+namespace MakinaCorpus\ACL\Bridge\Symfony;
 
 use MakinaCorpus\ACL\Manager;
-
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 

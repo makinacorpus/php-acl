@@ -6,12 +6,12 @@ use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
+use MakinaCorpus\ACL\Bridge\Symfony\ACLVoter;
 use MakinaCorpus\ACL\Collector\CallbackEntryCollector;
 use MakinaCorpus\ACL\Collector\CallbackProfileCollector;
 use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
-use MakinaCorpus\ACL\Impl\MemoryEntryStore;
-use MakinaCorpus\ACL\Impl\Symfony\ACLVoter;
+use MakinaCorpus\ACL\Store\MemoryEntryStore;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DefaultTest extends \PHPUnit_Framework_TestCase

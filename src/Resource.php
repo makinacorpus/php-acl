@@ -2,8 +2,6 @@
 
 namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Impl\IdentityTrait;
-
 /**
  * Represent a single resource
  */

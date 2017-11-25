@@ -1,12 +1,11 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony\DependencyInjection;
+namespace MakinaCorpus\ACL\Bridge\Symfony\DependencyInjection;
 
-use MakinaCorpus\ACL\Impl\ManagerAwareInterface;
-
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use MakinaCorpus\ACL\ManagerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /**
  * For all objects that use the ManagerAwareTrait extend their definition to

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Drupal;
+namespace MakinaCorpus\ACL\Bridge\Drupal;
 
 use Drupal\Core\Session\AccountInterface;
 

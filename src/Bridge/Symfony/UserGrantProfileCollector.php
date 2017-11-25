@@ -1,10 +1,9 @@
 <?php
 
-namespace MakinaCorpus\ACL\Impl\Symfony;
+namespace MakinaCorpus\ACL\Bridge\Symfony;
 
 use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
-
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 

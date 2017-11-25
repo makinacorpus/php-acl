@@ -2,17 +2,16 @@
 
 namespace MakinaCorpus\ACL\Tests;
 
-use MakinaCorpus\ACL\Impl\MemoryEntryStore;
 use MakinaCorpus\ACL\Manager;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Profile;
 use MakinaCorpus\ACL\Resource;
-use MakinaCorpus\ACL\Collector\CallbackProfileCollector;
-use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
 use MakinaCorpus\ACL\Collector\CallbackEntryCollector;
-use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
+use MakinaCorpus\ACL\Collector\CallbackProfileCollector;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
+use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
+use MakinaCorpus\ACL\Impl\MemoryEntryStore;
 use MakinaCorpus\ACL\Impl\Symfony\ACLVoter;
-
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DefaultTest extends \PHPUnit_Framework_TestCase
@@ -44,7 +43,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
     /**
      * Do the real test, but adds some variations
      *
-     * @param boolean $doPreload
+     * @param bool $doPreload
      */
     protected function doTheRealTest($doPreload = false, $callbackFilter = false)
     {
@@ -70,7 +69,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
         $this->manager = new Manager(
             $this->createStorages(),
             [new CallbackEntryCollector(
-                function (EntryListBuilderInterface $builder) use ($user1Id, $user2Id, $groupAId, $groupBId, $ARange, $BRange, $ABRange) {
+                function (EntryListBuilder $builder) use ($user1Id, $user2Id, $groupAId, $groupBId, $ARange, $BRange, $ABRange) {
 
                     // We don't care about resource type here
                     $resource = $builder->getResource();

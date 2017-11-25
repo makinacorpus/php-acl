@@ -2,11 +2,11 @@
 
 namespace MakinaCorpus\ACL\Impl\Drupal;
 
-use MakinaCorpus\ACL\EntryListInterface;
-use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
+use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Permission;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 /**
@@ -44,6 +44,8 @@ class DrupalTableEntryStore implements EntryStoreInterface
                     'not null'  => true,
                     'default'   => 0,
                 ],
+                // Optimization for the view operation, this one will be the one
+                // used the most; others will be arbitrary
                 'can_view' => [
                     'type'      => 'int',
                     'unsigned'  => true,
@@ -184,7 +186,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
 
         $rows = $this->database->query("SELECT * FROM {" . $this->table . "} WHERE resource_id = ?", [$resource->getId()]);
 
-        $builder = new NaiveEntryListBuilder($resource);
+        $builder = new EntryListBuilder($resource);
 
         foreach ($rows as $row) {
             $builder->add($row->profile_type, $row->profile_id, explode(',', $row->permissions));
@@ -204,7 +206,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function save(Resource $resource, EntryListInterface $list)
+    public function save(Resource $resource, EntryList $list)
     {
         $query = $this->database->insert($this->table);
         $query->fields(['resource_id', 'profile_type', 'profile_id', 'can_view', 'permissions', 'bitmask']);

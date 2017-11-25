@@ -63,7 +63,7 @@ final class DynamicResourceConverter implements ResourceConverterInterface
      *
      * @return string
      */
-    private function findType($object)
+    private function findType($object) : string
     {
         $class = get_class($object);
 

@@ -11,8 +11,6 @@ interface ManagerAwareInterface
 {
     /**
      * Set the ACL manager
-     *
-     * @param Manager $manager
      */
     public function setACLManager(Manager $aclManager);
 }

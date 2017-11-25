@@ -38,8 +38,6 @@ final class ProfileSet
             $instance->index[$profile->getType()] = (string)$profile->getId();
         }
 
-        $instance->cacheId = $instance->computeCacheIdentifier();
-
         return $instance;
     }
 
@@ -54,7 +52,6 @@ final class ProfileSet
     {
         $instance = new self();
         $instance->index = $array;
-        $instance->cacheId = $instance->computeCacheIdentifier();
 
         return $instance;
     }
@@ -71,12 +68,8 @@ final class ProfileSet
 
     /**
      * Compute a unique identifier for this profile set
-     *
-     * This will be used for caching purpose only
-     *
-     * @return string
      */
-    private function computeCacheIdentifier()
+    private function computeCacheIdentifier() : string
     {
         $ret = [];
 
@@ -91,23 +84,20 @@ final class ProfileSet
      * Get a unique identifier for this profile set
      *
      * This will be used for caching purpose only
-     *
-     * @return string
      */
-    public function getCacheIdentifier()
+    public function getCacheIdentifier() : string
     {
+        if (!$this->cacheId) {
+            $this->cacheId = $this->computeCacheIdentifier();
+        }
+
         return $this->cacheId;
     }
 
     /**
      * Does the have the given profile
-     *
-     * @param string $type
-     * @param string $id
-     *
-     * @return boolean
      */
-    public function is($type, $id)
+    public function is(string $type, string $id) : bool
     {
         if (isset($this->index[$type])) {
             return in_array($id, $this->index[$type]);
@@ -122,7 +112,7 @@ final class ProfileSet
      *   Keys are profile types, values are arrays whose keys are profile
      *   identifiers, values are identifier arrays
      */
-    public function toArray()
+    public function toArray() : array
     {
         return $this->index;
     }
@@ -130,9 +120,9 @@ final class ProfileSet
     /**
      * Does it have any profile
      *
-     * @return boolean
+     * @return bool
      */
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         return empty($this->index);
     }

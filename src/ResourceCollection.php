@@ -14,9 +14,9 @@ final class ResourceCollection implements \IteratorAggregate
      * Default constructor
      *
      * @param string $type
-     * @param int[]|string[] $idList
+     * @param string[] $idList
      */
-    public function __construct($type, $idList)
+    public function __construct(string $type, array $idList)
     {
         $this->type = $type;
         $this->idList = $idList;
@@ -35,9 +35,9 @@ final class ResourceCollection implements \IteratorAggregate
     /**
      * Get identifier list
      *
-     * @return int[]|string[]
+     * @return string[]
      */
-    public function getIdList()
+    public function getIdList() : array
     {
         return $this->idList;
     }

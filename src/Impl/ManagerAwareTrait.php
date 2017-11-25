@@ -13,8 +13,6 @@ trait ManagerAwareTrait /* implements ManagerAwareInterface */
 
     /**
      * Set the ACL manager
-     *
-     * @param Manager $manager
      */
     public function setACLManager(Manager $aclManager)
     {
@@ -24,13 +22,13 @@ trait ManagerAwareTrait /* implements ManagerAwareInterface */
     /**
      * Alias for Manager::isGranted()
      *
+     * @param string $permission
      * @param mixed $resource
      * @param mixed $profile
-     * @param string $permission
      *
-     * @return boolean
+     * @return bool
      */
-    protected function isGranted($permission, $resource, $profile)
+    protected function isGranted(string $permission, $resource, $profile) : bool
     {
         return $this->aclManager->isGranted($permission, $resource, $profile);
     }

@@ -23,7 +23,7 @@ class CallbackEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($type, $permission)
+    public function supports(string $type, string $permission) : bool
     {
         return (!$this->types || isset($this->types[$type])) && (!$this->permissions || isset($this->permissions[$permission]));
     }
@@ -31,7 +31,7 @@ class CallbackEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsType($type)
+    public function supportsType(string $type) : bool
     {
         return (!$this->types || isset($this->types[$type]));
     }
@@ -39,7 +39,7 @@ class CallbackEntryCollector implements EntryCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function collectEntryLists(EntryListBuilderInterface $builder)
+    public function collectEntryLists(EntryListBuilder $builder)
     {
         call_user_func($this->callback, $builder);
     }

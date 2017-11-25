@@ -7,9 +7,7 @@ interface ResourceConverterInterface
     /**
      * Convert the object
      *
-     * @param mixed object
-     *
-     * @return Resource
+     * @return null|\MakinaCorpus\ACL\Resource
      */
     public function convert($object);
 }

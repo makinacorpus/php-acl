@@ -2,12 +2,9 @@
 
 namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Collector\EntryCollectorInterface;
-use MakinaCorpus\ACL\Collector\ProfileCollectorInterface;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Collector\ProfileSetBuilder;
-use MakinaCorpus\ACL\Converter\ResourceConverterInterface;
 use MakinaCorpus\ACL\Error\UnsupportedResourceException;
-use MakinaCorpus\ACL\Store\EntryStoreInterface;
 
 final class Manager
 {
@@ -26,10 +23,10 @@ final class Manager
     /**
      * Default constructor
      *
-     * @param EntryStoreInterface[] $entryStores
-     * @param EntryCollectorInterface[] $resourceCollectors
-     * @param ProfileCollectorInterface[] $profileCollectors
-     * @param ResourceConverterInterface[] $resourceConverters
+     * @param \MakinaCorpus\ACL\Store\EntryStoreInterface[] $entryStores
+     * @param \MakinaCorpus\ACL\Collector\EntryCollectorInterface[] $resourceCollectors
+     * @param \MakinaCorpus\ACL\Collector\ProfileCollectorInterface[] $profileCollectors
+     * @param \MakinaCorpus\ACL\Converter\ResourceConverterInterface[] $resourceConverters
      * @param PermissionMap $permissionMap
      * @param boolean $debug
      */
@@ -39,7 +36,7 @@ final class Manager
         array $profileCollectors = [],
         array $resourceConverters = [],
         PermissionMap $permissionMap = null,
-        $debug = false
+        bool $debug = false
     ) {
         $this->entryStores = $entryStores;
         $this->resourceCollectors = $resourceCollectors;
@@ -56,10 +53,8 @@ final class Manager
 
     /**
      * Set debug mode
-     *
-     * @param boolean $debug
      */
-    public function setDebug($debug = true)
+    public function setDebug(bool $debug = true)
     {
         $this->debug = $debug;
     }
@@ -71,7 +66,7 @@ final class Manager
      *
      * @return Resource
      */
-    private function createResource($object)
+    private function createResource($object) : Resource
     {
         if ($object instanceof Resource) {
             return $object;
@@ -98,9 +93,9 @@ final class Manager
      *   The permission to check for, allowing early return using the supports()
      *   method with stores and collectors for performance reasons
      *
-     * @return EntryListInterface
+     * @return EntryList
      */
-    private function collectEntryListFor(Resource $resource, $object, $permission = null)
+    private function collectEntryListFor(Resource $resource, $object, string $permission = null) : EntryList
     {
         // Having an empty list of collects is valid, it just means that the
         // business layer deals with permissions by itself, using the store
@@ -110,7 +105,7 @@ final class Manager
         }
 
         $isSupported = false;
-        $builder = $this->permissionMap->createEntryListBuilder($resource, $object);
+        $builder = new EntryListBuilder($resource, $object, $this->permissionMap);
 
         foreach ($this->resourceCollectors as $collector) {
             $localSupport = false;
@@ -145,9 +140,9 @@ final class Manager
      *   The permission to check for, allowing early return using the supports()
      *   method with stores and collectors for performance reasons
      *
-     * @return EntryListInterface
+     * @return EntryList
      */
-    private function loadEntryListFor(Resource $resource, $object, $permission = null)
+    private function loadEntryListFor(Resource $resource, $object, string $permission = null) : EntryList
     {
         $list = null;
         $store = null;
@@ -182,12 +177,8 @@ final class Manager
 
     /**
      * Collect entry list for the given resource
-     *
-     * @param mixed $object
-     *
-     * @return ProfileSet
      */
-    private function collectProfileSetFor($object)
+    private function collectProfileSetFor($object) : ProfileSet
     {
         // Having an empty list of collects is valid, it just means that the
         // business layer deals with permissions by itself, using the store
@@ -207,12 +198,8 @@ final class Manager
 
     /**
      * Convert object to profile
-     *
-     * @param mixed $object
-     *
-     * @return ProfileSet
      */
-    private function expandProfile($object)
+    private function expandProfile($object) : ProfileSet
     {
         if ($object instanceof ProfileSet) {
             return $object;
@@ -236,14 +223,8 @@ final class Manager
 
     /**
      * Do the real permissions check
-     *
-     * @param mixed $object
-     * @param ProfileSet $profiles
-     * @param string $permission
-     *
-     * @return boolean
      */
-    private function doCheck($object, ProfileSet $profiles, $permission)
+    private function doCheck($object, ProfileSet $profiles, string $permission) : bool
     {
         if ($object instanceof Resource) {
             $resource = $object;
@@ -268,11 +249,6 @@ final class Manager
      * Preload data if necessary for resources
      *
      * Data will get cached, making the permission checks a lot faster.
-     *
-     * @param Resource $resource
-     *   The expanded and normalized resource object
-     * @param string $permission
-     *   Permission for the supports() method
      */
     private function doPreload(ResourceCollection $resources)
     {
@@ -285,13 +261,8 @@ final class Manager
 
     /**
      * Create a resource collection
-     *
-     * @param string $type
-     * @param int[]|string[] $idList
-     *
-     * @return ResourceCollection
      */
-    private function createCollection($type, array $idList)
+    private function createCollection(string $type, array $idList) : ResourceCollection
     {
         return new ResourceCollection($type, $idList);
     }
@@ -308,11 +279,10 @@ final class Manager
      * Collect entry list for given resource
      *
      * @param mixed $object
-     *   A resource
      *
-     * @return EntryListInterface[]
+     * @return EntryList[]
      */
-    public function collectEntryListAll($object)
+    public function collectEntryListAll($object) : array
     {
         try {
             $resource = $this->createResource($object);
@@ -329,12 +299,8 @@ final class Manager
 
     /**
      * Collect profiles for the given object
-     *
-     * @param mixed $object
-     *
-     * @return ProfileSet
      */
-    public function collectProfiles($object)
+    public function collectProfiles($object) : ProfileSet
     {
         return $this->expandProfile($object);
     }
@@ -347,7 +313,7 @@ final class Manager
      * @param string $type
      * @param int[]|string[] $idList
      */
-    public function preload($type, array $idList)
+    public function preload(string $type, array $idList)
     {
         $this->doPreload($this->createCollection($type, $idList));
     }
@@ -362,7 +328,7 @@ final class Manager
      * @return int
      *   Manager::ALLOW, Manager::DENY or Manager::ABSTAIN
      */
-    public function vote($profile, $resource, $permission)
+    public function vote($profile, $resource, string $permission) : int
     {
         if (!$profile) {
             throw new \Exception("Passing a null profile is unsupported yet");
@@ -396,9 +362,9 @@ final class Manager
      * @param mixed $resource
      * @param mixed|Profile|ProfileSet $profile
      *
-     * @return boolean
+     * @return bool
      */
-    public function isGranted($permission, $resource, $profile = null)
+    public function isGranted(string $permission, $resource, $profile = null) : bool
     {
         if (!$profile) {
             throw new \Exception("Passing a null profile is unsupported yet");

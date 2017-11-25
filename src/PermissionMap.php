@@ -2,11 +2,15 @@
 
 namespace MakinaCorpus\ACL;
 
-use MakinaCorpus\ACL\Collector\EntryListBuilderInterface;
-use MakinaCorpus\ACL\Impl\NaiveEntryListBuilder;
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 
 /**
- * Map of supported permissions
+ * Map of supported permissions, permissions will be identified by bit flags
+ * for performance purposes, implementors that wishes to add additional
+ * permissions for business purpose should be aware of this.
+ *
+ * Because bitmasks are int32 or int64 depending upon for which architecture
+ * PHP was compiled for, try to stay under the 32 permissions count.
  */
 class PermissionMap
 {
@@ -16,7 +20,7 @@ class PermissionMap
      * Default constructor
      *
      * @param int[] $map
-     *   Keys are permission names, values are bitmasks
+     *   Keys are permission names, values are bit flags
      */
     public function __construct(array $map = [])
     {
@@ -44,6 +48,58 @@ class PermissionMap
         $this->map = $map;
     }
 
+    /**
+     * Build bitmask value from permission strings
+     *
+     * @param string[] $permissions
+     *
+     * @return int
+     *   Bitmask
+     */
+    public function build(array $permissions) : int
+    {
+        $value = 0;
+
+        foreach ($permissions as $permission) {
+            $value += $this->getBit($permission);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get original permission to bit map
+     *
+     * @return int[]
+     *   Keys are permissions, values are bit values
+     */
+    public function getBitMap() : array
+    {
+        return $this->map;
+    }
+
+    /**
+     * Get single bit flag for the given permission
+     */
+    public function getBit(string $permission) : int
+    {
+        if (isset($this->map[$permission])) {
+            return $this->map[$permission];
+        }
+
+        return 0;
+    }
+
+    /**
+     * Add new permissions to this map
+     *
+     * @param int[] $permissions
+     *   Keys are permissions strings, values are associated bit flags which
+     *   must not exist in the current map
+     *
+     * @throws \InvalidArgumentException
+     *   Whenever a bit flag overrides an existing one
+     */
     public function addPermissions(array $permissions)
     {
         foreach ($permissions as $string => $mask) {
@@ -63,26 +119,9 @@ class PermissionMap
     }
 
     /**
-     * Create entry list builder
-     *
-     * @param Resource $resource
-     * @param mixed $object
-     *
-     * @return EntryListBuilderInterface
-     */
-    public function createEntryListBuilder(Resource $resource, $object)
-    {
-        return new NaiveEntryListBuilder($resource, $object);
-    }
-
-    /**
      * Does this map supports the given permission
-     *
-     * @param string $permission
-     *
-     * @return boolean
      */
-    public function supports($permission)
+    public function supports(string $permission) : bool
     {
         return isset($this->map[$permission]);
     }

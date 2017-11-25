@@ -24,9 +24,9 @@ final class ProfileSetBuilder
     }
 
     /**
-     * Get object
+     * Get original object if any
      *
-     * @return mixed
+     * @return null|mixed
      */
     public function getObject()
     {
@@ -36,7 +36,7 @@ final class ProfileSetBuilder
     /**
      * Convert this object as entry list
      */
-    public function convertToProfileSet()
+    public function convertToProfileSet() : ProfileSet
     {
         return ProfileSet::createFromArray($this->entries);
     }
@@ -49,7 +49,7 @@ final class ProfileSetBuilder
      * @param string|string[] $id
      *   Profile identifier
      */
-    public function add($type, $id)
+    public function add(string $type, $id)
     {
         // @todo should we fail on overwrite?
         if (is_array($id)) {
@@ -71,9 +71,9 @@ final class ProfileSetBuilder
      * @param string $permission
      *   Single permission
      *
-     * @return boolean
+     * @return bool
      */
-    public function has($type, $id = null)
+    public function has(string $type, string $id = null) : bool
     {
         if (null === $id) {
             return isset($this->entries[$type]);
@@ -91,9 +91,9 @@ final class ProfileSetBuilder
      *   Profile identifier, if null is given remove all permissions for
      *   the given profile type
      *
-     * @return boolean
+     * @return bool
      */
-    public function remove($type, $id = null)
+    public function remove(string $type, string $id = null) : bool
     {
         if (null === $id) {
             unset($this->entries[$type]);

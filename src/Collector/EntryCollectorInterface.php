@@ -14,27 +14,16 @@ interface EntryCollectorInterface
 {
     /**
      * Does this object supports the given resource type
-     *
-     * @param string $type
-     * @param string $permission
-     *
-     * @return boolean
      */
-    public function supports($type, $permission);
+    public function supports(string $type, string $permission) : bool;
 
     /**
      * Does this object supports the given resource type
-     *
-     * @param string $type
-     *
-     * @return boolean
      */
-    public function supportsType($type);
+    public function supportsType(string $type) : bool;
 
     /**
      * Collect entries for resource
-     *
-     * @param EntryListBuilderInterface $entries
      */
-    public function collectEntryLists(EntryListBuilderInterface $builder);
+    public function collectEntryLists(EntryListBuilder $builder);
 }

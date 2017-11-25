@@ -2,7 +2,7 @@
 
 namespace MakinaCorpus\ACL\Store;
 
-use MakinaCorpus\ACL\EntryListInterface;
+use MakinaCorpus\ACL\EntryList;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
 
@@ -13,46 +13,28 @@ interface EntryStoreInterface
 {
     /**
      * Does this object supports the given resource type
-     *
-     * @param string $type
-     * @param string $permission
-     *
-     * @return boolean
      */
-    public function supports($type, $permission);
+    public function supports(string $type, string $permission) : bool;
 
     /**
      * Does this object supports the given resource type
-     *
-     * @param string $type
-     *
-     * @return boolean
      */
-    public function supportsType($type);
+    public function supportsType(string $type) : bool;
 
     /**
      * Delete all entries for the given resource
-     *
-     * @param Resource $resource
      */
     public function delete(Resource $resource);
 
     /**
      * Delete all entries for the given resources
-     *
-     * @param ResourceCollection $resources
      */
     public function deleteAll(ResourceCollection $resources);
 
     /**
      * Load all entries for the given resource
      *
-     * @param Resource $resource
-     *
-     * @return EntryListInterface
-     *   You may return null if nothing exists, but if it has already been
-     *   asked to store an empty list, you should then return an empty list
-     *   in order to the checker to avoid running the collect event twice.
+     * @return null|\MakinaCorpus\ACL\EntryList
      */
     public function load(Resource $resource);
 
@@ -61,20 +43,15 @@ interface EntryStoreInterface
      *
      * @param ResourceCollection $resources
      *
-     * @return EntryListInterface[]
+     * @return EntryList[]
      *   Each entry list for all resources, keys are the same as the $resources
      *   array entry list: without this everything would fail since we cannot
      *   use maps with objects as keys in PHP
      */
-    public function loadAll(ResourceCollection $resources);
+    public function loadAll(ResourceCollection $resources) : array;
 
     /**
      * Save entries for the given resource (removes old one if exists)
-     *
-     * @param Resource $resource
-     * @param EntryListInterface $list
-     *
-     * @return EntryListInterface
      */
-    public function save(Resource $resource, EntryListInterface $list);
+    public function save(Resource $resource, EntryList $list) : EntryList;
 }

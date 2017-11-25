@@ -14,32 +14,25 @@ trait IdentityTrait
 
     /**
      * Default constructor
-     *
-     * @param string $type
-     * @param string $id
      */
-    public function __construct($type, $id)
+    public function __construct(string $type, string $id)
     {
         $this->type = $type;
-        $this->id = $id;
+        $this->id = (string)$id;
     }
 
     /**
      * Get object type
-     *
-     * @return string
      */
-    public function getType()
+    public function getType() : string
     {
         return $this->type;
     }
 
     /**
      * Get object identifier
-     *
-     * @return string
      */
-    public function getId()
+    public function getId() : string
     {
         return $this->id;
     }
@@ -50,17 +43,14 @@ trait IdentityTrait
      * @param mixed $object
      *   Must be the same class
      *
-     * @return boolean
+     * @return bool
      */
-    public function equals($object)
+    public function equals($object) : bool
     {
-        if (is_numeric($this->id)) {
-            // Most frameworks out there actually won't cast integers coming
-            // from their database as int and keep them as strings, we must
-            // prevent any false negative due to poorly coded frameworks.
-            return $object->type === $this->type && $object->id == $this->id;
-        } else {
-            return $object->type === $this->type && $object->id === $this->id;
+        if (!is_object($object) || get_class($object) !== get_class($this)) {
+            throw new \BadMethodCallException();
         }
+
+        return $object->type === $this->type && $object->id === $this->id;
     }
 }

@@ -10,7 +10,7 @@ final class Identity
      *
      * @param mixed $object
      *
-     * @return string
+     * @return null|string
      */
     static public function computeUniqueIdentifier($object)
     {
@@ -46,7 +46,7 @@ final class Identity
     /**
      * Get string representation of the given item
      */
-    static public function getStringRepresentation($type, $id)
+    static public function getStringRepresentation(string $type, string $id) : string
     {
         return $type . '#' . $id;
     }
@@ -54,7 +54,7 @@ final class Identity
     /**
      * From a string reprensentation, give type and identifier
      */
-    static public function fromString($string)
+    static public function fromString(string $string) : array
     {
         // We do not check with false because 0 would mean the delimiter
         // is the first char, and this would mean there is no type

@@ -52,6 +52,8 @@ final class Entry
      */
     public function getPermissions() : array
     {
+        sort($this->permissions, SORT_NATURAL);
+
         return $this->permissions;
     }
 

@@ -90,10 +90,8 @@ final class ProfileSetBuilder
      * @param string|string[] $id
      *   Profile identifier, if null is given remove all permissions for
      *   the given profile type
-     *
-     * @return bool
      */
-    public function remove(string $type, string $id = null) : bool
+    public function remove(string $type, string $id = null)
     {
         if (null === $id) {
             unset($this->entries[$type]);

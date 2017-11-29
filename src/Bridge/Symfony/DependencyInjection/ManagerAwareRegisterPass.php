@@ -10,6 +10,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 /**
  * For all objects that use the ManagerAwareTrait extend their definition to
  * inject the manager from
+ *
+ * @codeCoverageIgnore
  */
 class ManagerAwareRegisterPass implements CompilerPassInterface
 {

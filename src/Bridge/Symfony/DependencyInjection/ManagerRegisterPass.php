@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /**
  * Registers all dynamic ACL voter dependencies, unregister it if there's not.
+ *
+ * @codeCoverageIgnore
  */
 class ManagerRegisterPass implements CompilerPassInterface
 {

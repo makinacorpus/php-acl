@@ -7,6 +7,8 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Collection of useful method for services registration based on tags
+ *
+ * @codeCoverageIgnore
  */
 trait RegisterPassTrait /* implements CompilerPassInterface */
 {

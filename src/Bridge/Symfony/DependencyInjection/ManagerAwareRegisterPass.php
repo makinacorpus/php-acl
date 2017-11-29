@@ -15,9 +15,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
  */
 class ManagerAwareRegisterPass implements CompilerPassInterface
 {
-    private $aclManagerId = 'acl.manager';
+    private $aclManagerId = 'php_acl.manager';
 
-    public function __construct($aclManagerId = 'acl.manager')
+    public function __construct($aclManagerId = 'php_acl.manager')
     {
         $this->aclManagerId = $aclManagerId;
     }

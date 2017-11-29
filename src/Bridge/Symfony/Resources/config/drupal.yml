@@ -4,13 +4,13 @@ services:
     php_acl.drupal.profile_collector:
         public: false
         class: MakinaCorpus\ACL\Bridge\Drupal\UserGrantProfileCollector
-        tags: [{name: acl.profile_collector}]
+        tags: [{name: php_acl.profile_collector}]
 
     # Converts entities to ('entity_type', 'entity_id') resources
     php_acl.drupal.resource_converter:
         public: false
         class: MakinaCorpus\ACL\Bridge\Drupal\EntityResourceConverter
-        tags: [{name: acl.resource_converter}]
+        tags: [{name: php_acl.resource_converter}]
 
     # Component that converts entry lists for nodes to Drupal node
     # access API, will be used by the sf_acl module

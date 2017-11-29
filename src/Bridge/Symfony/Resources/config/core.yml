@@ -3,25 +3,25 @@ services:
 
     # Default in-memory storage, to be used as an in-memory cache in order to
     # avoid running the node collect events too many times
-    acl.store.memory:
+    php_acl.store.memory:
         public: false
         class: MakinaCorpus\ACL\Store\MemoryEntryStore
-        tags: [{name: acl.entry_store}]
+        tags: [{name: php_acl.entry_store}]
 
-    acl.permission_map:
+    php_acl.permission_map:
         public: true
-        alias: acl.permission_map.default
+        alias: php_acl.permission_map.default
 
-    acl.permission_map.default:
+    php_acl.permission_map.default:
         public: false
         class: MakinaCorpus\ACL\PermissionMap
 
     # All arguments for this class will be set using a compilation pass
-    acl.manager:
+    php_acl.manager:
         public: true
         class: MakinaCorpus\ACL\Manager
 
     # ACL voter for Symfony security component
-    acl.voter:
+    php_acl.voter:
         public: false
         class: MakinaCorpus\ACL\Bridge\Symfony\ACLVoter

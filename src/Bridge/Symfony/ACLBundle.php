@@ -22,7 +22,7 @@ class ACLBundle extends Bundle
         $loader->load('core.yml');
 
         // Attempt Drupal detection and automatically register services along.
-        if (class_exists('Drupal\\Core\\DependencyInjection\\ServiceProviderInterface')) {
+        if (interface_exists('\\Drupal\\Core\\DependencyInjection\\ServiceProviderInterface')) {
             $loader->load('drupal.yml');
         }
 

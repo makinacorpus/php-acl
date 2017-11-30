@@ -280,9 +280,9 @@ final class Manager
      *
      * @param mixed $object
      *
-     * @return EntryList[]
+     * @return EntryList
      */
-    public function collectEntryListAll($object) : array
+    public function collectEntryListAll($object) : EntryList
     {
         try {
             $resource = $this->createResource($object);

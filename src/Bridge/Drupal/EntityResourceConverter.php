@@ -24,10 +24,10 @@ class EntityResourceConverter implements ResourceConverterInterface
         if ($object instanceof EntityInterface) {
             return new Resource($object->getEntityTypeId(), $object->id());
         }
-        if (property_exists($object, 'nid') && property_exists($object, 'vid') && property_exists($object, 'type')) {
+        if ($object instanceof \stdClass && property_exists($object, 'nid') && property_exists($object, 'vid') && property_exists($object, 'type')) {
             return new Resource('node', $object->nid);
         }
-        if (property_exists($object, 'uid') && property_exists($object, 'name') && property_exists($object, 'mail')) {
+        if ($object instanceof \stdClass && property_exists($object, 'uid') && property_exists($object, 'name') && property_exists($object, 'mail')) {
             return new Resource('user', $object->uid);
         }
     }

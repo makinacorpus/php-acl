@@ -16,7 +16,7 @@ trait AuthorizationAwareTrait /* implements AuthorizationAwareInterface */
      *
      * @param AuthorizationCheckerInterface $authorizationChecker
      */
-    public function setAuthorizatonChecker(AuthorizationCheckerInterface $authorizationChecker)
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->authorizationChecker = $authorizationChecker;
     }

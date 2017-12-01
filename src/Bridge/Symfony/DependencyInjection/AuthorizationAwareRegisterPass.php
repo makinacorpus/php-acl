@@ -34,7 +34,7 @@ class AuthorizationAwareRegisterPass implements CompilerPassInterface
         foreach ($container->getDefinitions() as $definition) {
             try {
                 if (is_subclass_of($definition->getClass(), AuthorizationAwareInterface::class)) {
-                    $definition->addMethodCall('setAuthorizatonChecker', [new Reference($this->authorizationCheckerId)]);
+                    $definition->addMethodCall('setAuthorizationChecker', [new Reference($this->authorizationCheckerId)]);
                 }
             } catch (\ReflectionException $e) {
                 // Class does not seem to exists, do nothing.

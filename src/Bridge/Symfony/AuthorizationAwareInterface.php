@@ -14,5 +14,5 @@ interface AuthorizationAwareInterface
      *
      * @param AuthorizationCheckerInterface $authorizationChecker
      */
-    public function setAuthorizatonChecker(AuthorizationCheckerInterface $authorizationChecker);
+    public function setAuthorizationChecker(AuthorizationCheckerInterface $authorizationChecker);
 }

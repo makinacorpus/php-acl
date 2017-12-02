@@ -2,12 +2,13 @@
 
 namespace MakinaCorpus\ACL\Bridge\Drupal;
 
+use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\EntryList;
-use MakinaCorpus\ACL\Permission;
+use MakinaCorpus\ACL\PermissionMap;
 use MakinaCorpus\ACL\Resource;
 use MakinaCorpus\ACL\ResourceCollection;
-use MakinaCorpus\ACL\Collector\EntryListBuilder;
 use MakinaCorpus\ACL\Store\EntryStoreInterface;
+use MakinaCorpus\ACL\Permission;
 
 /**
  * This implementation will only allow a "view" permission for queries.
@@ -30,22 +31,25 @@ class DrupalTableEntryStore implements EntryStoreInterface
                     'type'      => 'int',
                     'unsigned'  => true,
                     'not null'  => true,
-                    'default'   => 0,
                 ],
                 'profile_type' => [
                     'type'      => 'varchar',
                     'length'    => 255,
                     'not null'  => true,
-                    'default'   => '',
                 ],
                 'profile_id' => [
-                    'type'      => 'int',
-                    'unsigned'  => true,
+                    'type'      => 'varchar',
+                    'length'    => 255,
                     'not null'  => true,
-                    'default'   => 0,
                 ],
-                // Optimization for the view operation, this one will be the one
-                // used the most; others will be arbitrary
+                // Optimization for the the most basics operations which are
+                // the one that will be needed in 99.99% percent of the time:
+                // you will probably never need to restricte SQL queries with
+                // arbitrary permissions such as "lock", "share" or others.
+                //
+                // @todo sorry, PostgreSQL type should be boolean here, but
+                //   drupal being drupal, and its PG support being awful, we
+                //   are just going to use integers instead
                 'can_view' => [
                     'type'      => 'int',
                     'unsigned'  => true,
@@ -53,9 +57,29 @@ class DrupalTableEntryStore implements EntryStoreInterface
                     'default'   => 0,
                     'size'      => 'tiny',
                 ],
+                'can_update' => [
+                    'type'      => 'int',
+                    'unsigned'  => true,
+                    'not null'  => true,
+                    'default'   => 0,
+                    'size'      => 'tiny',
+                ],
+                'can_delete' => [
+                    'type'      => 'int',
+                    'unsigned'  => true,
+                    'not null'  => true,
+                    'default'   => 0,
+                    'size'      => 'tiny',
+                ],
+                // Permissions is just an arbitrary textual reprensentation of
+                // permissions which is not supposed to be queried or indexed,
+                // it exists in order to be able for select queries to have a
+                // human readable result, or to be able to potentially rebuild
+                // broken bitmasks.
                 'permissions' => [
                     'type'      => 'text',
                     'not null'  => true,
+                    'default'   => '',
                 ],
                 'bitmask' => [
                     'type'      => 'int',
@@ -71,38 +95,16 @@ class DrupalTableEntryStore implements EntryStoreInterface
     private $database;
     private $table;
     private $type;
-    private $viewPermission;
-    private $tablesToJoin = [];
-    private $permissions = [];
+    private $permissionMap;
 
     /**
      * Default constructor
-     *
-     * @param \DatabaseConnection $database
-     *   Drupal database connection
-     * @param string $table
-     *   Table name in which to store
-     * @param string $type
-     *   Resource type this store supports
-     * @param string[] $tablesToJoin
-     *   For query alteration support, you need to provide a list of tables to
-     *   join for access queries, keys are table names, values are the primary
-     *   identifier column name
      */
-    public function __construct(
-        \DatabaseConnection $database,
-        $table,
-        $type = null,
-        $viewPermission = Permission::VIEW,
-        array $tablesToJoin = [],
-        array $permissions = []
-    ) {
+    public function __construct(\DatabaseConnection $database, $table, $resourceType, PermissionMap $permissionMap = null)
+    {
         $this->database = $database;
         $this->table = $table;
-        $this->type = $type;
-        $this->viewPermission = $viewPermission;
-        $this->tablesToJoin = [];
-        $this->permissions = $permissions ? array_flip($permissions) : [];
+        $this->permissionMap = $permissionMap ? $permissionMap : new PermissionMap();
     }
 
     /**
@@ -144,7 +146,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
      */
     public function supports($type, $permission)
     {
-        return $type === $this->type && (!$this->permissions || isset($this->permissions[$permission]));
+        return $type === $this->type && $this->permissionMap->supports($permission);
     }
 
     /**
@@ -209,7 +211,7 @@ class DrupalTableEntryStore implements EntryStoreInterface
     public function save(Resource $resource, EntryList $list)
     {
         $query = $this->database->insert($this->table);
-        $query->fields(['resource_id', 'profile_type', 'profile_id', 'can_view', 'permissions', 'bitmask']);
+        $query->fields(['resource_id', 'profile_type', 'profile_id', 'can_view', 'can_update', 'can_delete', 'permissions', 'bitmask']);
 
         $resourceId = $resource->getId();
 
@@ -221,11 +223,15 @@ class DrupalTableEntryStore implements EntryStoreInterface
                 $profile->getType(),
                 $profile->getId(),
                 implode(',', $entry->getPermissions()),
-                (int)$entry->hasPermission($this->viewPermission),
-                0, // @todo bitmask?
+                (int)$entry->hasPermission(Permission::VIEW),
+                (int)$entry->hasPermission(Permission::UPDATE),
+                (int)$entry->hasPermission(Permission::DELETE),
+                implode(',', $entry->getPermissions()),
+                0, // @todo bitmask
             ]);
         }
 
+        // @todo delete/insert is innefficient
         $this->delete($resource);
         $query->execute();
     }
